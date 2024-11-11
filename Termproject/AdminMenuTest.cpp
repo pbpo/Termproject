@@ -3,11 +3,11 @@
 
 using namespace std;
 
-// »ı¼ºÀÚ ±¸Çö
-// TestGroup »ı¼ºÀÚ¸¦ ½ÇÇàÇÒ ¶§ ±¸ÇöÇÑ Å×½ºÆ® °³¼ö¸¦ ÀÔ·ÂÇØÁÖ½Ã±â ¹Ù¶ø´Ï´Ù
+// ìƒì„±ì êµ¬í˜„
+// TestGroup ìƒì„±ìë¥¼ ì‹¤í–‰í•  ë•Œ êµ¬í˜„í•œ í…ŒìŠ¤íŠ¸ ê°œìˆ˜ë¥¼ ì…ë ¥í•´ì£¼ì‹œê¸° ë°”ëë‹ˆë‹¤(TestGroup(groupNumber, 3) ì˜ ë‘ë²ˆì§¸ ë§¤ê°œë³€ìˆ˜)
 AdminMenuTest::AdminMenuTest(int groupNumber) : TestGroup(groupNumber, 3) {}
 
-// Å×½ºÆ® ÇÔ¼ö ±¸Çö
+// í…ŒìŠ¤íŠ¸ í•¨ìˆ˜ êµ¬í˜„
 void AdminMenuTest::test_1() {
     cout << "Running AdminMenuTest - Test 1" << endl;
 }
