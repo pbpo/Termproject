@@ -3,16 +3,18 @@
 #include <memory>
 
 #include "TestGroup.hpp"
-// ±â´Éº° test Å¬·¡½º import
+// ê¸°ëŠ¥ë³„ test í´ë˜ìŠ¤ import
 #include "AdminMenuTest.hpp"
+#include "SystemSetupTest.hpp"
+
 
 using namespace std;
 
 void runTest() {
     unordered_map<int, shared_ptr<TestGroup>> testGroups;
 
-    // Å×½ºÆ® ±×·ì Ãß°¡ (¿¹½Ã)
-    //testGroups[1] = make_shared<DepositTest>(1); // groupNumber = 1
+    // í…ŒìŠ¤íŠ¸ ê·¸ë£¹ ì¶”ê°€ (ì˜ˆì‹œ)
+    testGroups[1] = make_shared<SystemSetupTest>(1); // groupNumber = 1
     //testGroups[2] = make_shared<ATMSessionTest>(2);
     //testGroups[3] = make_shared<UserAuthorizationTest>(3); 
     //testGroups[4] = make_shared<DepositTest>(4); 
@@ -28,7 +30,7 @@ void runTest() {
         cout << "Enter test key (e.g., 1 for group tests, 2.5 for a specific test) or '0' to quit: ";
         cin >> testKey;
 
-        // ¼¼¼Ç Á¾·á
+        // ì„¸ì…˜ ì¢…ë£Œ
         if (testKey == "0") {
             cout << "Exiting the test runner. Goodbye!" << endl;
             break;
@@ -36,19 +38,19 @@ void runTest() {
 
         try {
             size_t pos = testKey.find('.');
-            int groupNumber = stoi(testKey.substr(0, pos)); // ±×·ì ¹øÈ£ ÃßÃâ
+            int groupNumber = stoi(testKey.substr(0, pos)); // ê·¸ë£¹ ë²ˆí˜¸ ì¶”ì¶œ
 
-            // ±×·ì Á¸Àç È®ÀÎ
+            // ê·¸ë£¹ ì¡´ì¬ í™•ì¸
             if (testGroups.find(groupNumber) == testGroups.end()) {
                 throw out_of_range("No test group found for groupNumber: " + to_string(groupNumber));
             }
 
             if (pos == string::npos) {
-                // ÀÚ¿¬¼ö ÀÔ·Â: ±×·ì ÀüÃ¼ Å×½ºÆ® ½ÇÇà
+                // ìì—°ìˆ˜ ì…ë ¥: ê·¸ë£¹ ì „ì²´ í…ŒìŠ¤íŠ¸ ì‹¤í–‰
                 testGroups[groupNumber]->execute();
             }
             else {
-                // Æ¯Á¤ Å×½ºÆ® ½ÇÇà (e.g., 1.5)
+                // íŠ¹ì • í…ŒìŠ¤íŠ¸ ì‹¤í–‰ (e.g., 1.5)
                 int testId = stoi(testKey.substr(pos + 1));
                 testGroups[groupNumber]->execute(testId);
             }
