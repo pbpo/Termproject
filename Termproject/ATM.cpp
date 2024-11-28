@@ -9,6 +9,7 @@
 #include <iostream>
 #include <variant>
 #include <fstream>
+//김현수
 
 // Constructor
 ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank> primaryBank, bool isBilingual)
@@ -255,25 +256,7 @@ void ATM::handleDeposit() {
     }
 
     DepositType depositType = (depositTypeInput == 1) ? DepositType::CASH : DepositType::CHECK;
-
-    // Enter deposit amount
-    int amount = 0;
-    while (true) {
-        auto amountVariant = InputHandler::getInput("Enter amount to deposit:\n", InputType::INT);
-        try {
-            amount = std::get<int>(amountVariant);
-            if (amount <= 0) {
-                std::cout << "Amount must be positive. Please try again." << std::endl;
-                continue;
-            }
-            break;
-        } catch (const std::bad_variant_access&) {
-            std::cout << languageSupport->getMessage("invalid_input") << std::endl;
-        }
-    }
-
-    // Create transaction
-    auto depositTransaction = TransactionFactory::createDepositTransaction(amount, currentAccount, depositType, currentCardNumber);
+auto depositTransaction = TransactionFactory::createDepositTransaction(0, currentAccount, depositType, currentCardNumber);
 
     // Execute transaction
     if (depositTransaction->execute()) {
