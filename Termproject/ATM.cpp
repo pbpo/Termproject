@@ -333,7 +333,6 @@ void ATM::showMainMenu() {
     }
 }
 
-// Handle Deposit
 void ATM::handleDeposit() {
     // 입금 유형 선택
     std::cout << languageSupport->getMessage("select_deposit_type") << std::endl;
@@ -355,24 +354,30 @@ void ATM::handleDeposit() {
 
     DepositType depositType = (depositTypeInput == 1) ? DepositType::CASH : DepositType::CHECK;
 
-    // Enter deposit amount
+    // 입금 금액 입력
     int amount = 0;
     while (true) {
-        auto amountVariant = InputHandler::getInput(languageSupport->getMessage("enter_amount") + "\n", InputType::INT);
+        
         try {
-            amount = std::get<int>(amountVariant);
+            
+            if(depositType == DepositType::CHECK ){
+                auto amountVariant = InputHandler::getInput(languageSupport->getMessage("enter_deposit_amount"), InputType::INT);
+                amount = std::get<int>(amountVariant);
             if (amount <= 0) {
                 std::cout << languageSupport->getMessage("invalid_amount") << std::endl;
                 continue;
+            }
+            if (  amount < 100000) {
+                
+                std::cout << languageSupport->getMessage("min_check_amount") << std::endl;
+                continue;
+            }
             }
             break;
         } catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
         }
-    }
-
-    // DepositTransaction 객체 생성
-    auto depositTransaction = TransactionFactory::createDepositTransaction(amount, currentAccount, depositType, currentCardNumber);
+         auto depositTransaction = TransactionFactory::createDepositTransaction(amount, currentAccount, depositType, currentCardNumber);
 
     // 트랜잭션 실행
     if (depositTransaction->execute()) {
@@ -393,7 +398,30 @@ void ATM::handleDeposit() {
     } else {
         std::cout << languageSupport->getMessage("deposit_failed") << std::endl;
     }
+    }
+
+    // DepositTransaction 객체 생성
+    auto depositTransaction = TransactionFactory::createDepositTransaction(amount, currentAccount, depositType, currentCardNumber);
+
+    // 트랜잭션 실행
+    if (depositTransaction->execute()) {
+        // 거래 기록 추가
+        currentAccount->addTransaction(depositTransaction);
+        addSessionTransaction(depositTransaction);
+        std::cout << languageSupport->getMessage("deposit_successful") << std::endl;
+        if (transactionLogger) {
+            transactionLogger->logTransaction(
+                depositTransaction->getTransactionID(),
+                depositTransaction->getCardNumber(),
+                depositTransaction->getTransactionType(),
+                depositTransaction->getAmount()
+            );  
+        }
+    } else {
+        std::cout << languageSupport->getMessage("deposit_failed") << std::endl;
+    }
 }
+
 
 // Handle Withdrawal
 void ATM::handleWithdrawal() {

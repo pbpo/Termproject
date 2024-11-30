@@ -1,0 +1,2 @@
+[2024-11-30 20:40:32] Transaction ID: TXN512739, Card Number: 111111111111, Type: Deposit, Amount: 0
+[2024-11-30 20:40:48] Transaction ID: TXN771277, Card Number: 111111111111, Type: Withdrawal, Amount: 50000
