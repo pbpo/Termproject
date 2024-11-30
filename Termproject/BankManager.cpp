@@ -31,6 +31,17 @@ const std::map<std::string, Bank*>& BankManager::getAllBanks() const {
     return banks;
 }
 
+std::shared_ptr<Account> BankManager::getAccount(const std::string& accountNumber) const {
+    for (const auto& bankPair : banks) { // Iterate over all banks
+        auto account = bankPair.second->getAccount(accountNumber);
+        if (account != nullptr) { // If the account is found
+            return account; // Return it
+        }
+    }
+    return nullptr; // Return nullptr if not found in any bank
+}
+
+
 // Function to get all accounts from all banks
 std::map<std::string, std::shared_ptr<Account>> BankManager::getAllAccounts() const {
     std::map<std::string, std::shared_ptr<Account>> allAccounts;
@@ -43,6 +54,8 @@ std::map<std::string, std::shared_ptr<Account>> BankManager::getAllAccounts() co
     return allAccounts;
 }
 
+
+
 // Function to print all accounts from all banks
 void BankManager::printAllAccounts() const {
     for (const auto& bankPair : banks) {
@@ -51,3 +64,4 @@ void BankManager::printAllAccounts() const {
         std::cout << "---------------------------------" << std::endl;
     }
 }
+
