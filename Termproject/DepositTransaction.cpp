@@ -7,9 +7,9 @@
 #include "Bank.hpp"
 #include "LanguageSupport.hpp"
 
-DepositTransaction::DepositTransaction(const std::string& transactionID, int amount, const std::shared_ptr<Account>& account,
-                                       DepositType depositType, const std::string& cardNumber)
-    : ITransaction(transactionID, amount, cardNumber), account(account), depositType(depositType), fee(0), feeDeductedFromAccount(false) {
+DepositTransaction::DepositTransaction(CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account,
+    DepositType depositType, const std::string& cardNumber)
+    : ITransaction(cashManager, transactionID, amount, cardNumber), account(account), depositType(depositType), fee(0), feeDeductedFromAccount(false) {
     languageSupport = LanguageSupport::getInstance();
 }
 
@@ -20,7 +20,8 @@ bool DepositTransaction::execute() {
     // 수수료 계산
     if (account->getBankName() == globalBank->getBankName()) {
         fee = 1000; // 주거래 은행
-    } else {
+    }
+    else {
         fee = 2000; // 비주거래 은행
     }
 
@@ -45,7 +46,8 @@ bool DepositTransaction::execute() {
                         continue;
                     }
                     break;
-                } catch (const std::bad_variant_access&) {
+                }
+                catch (const std::bad_variant_access&) {
                     std::cout << languageSupport->getMessage("invalid_input") << std::endl;
                 }
             }
@@ -65,15 +67,17 @@ bool DepositTransaction::execute() {
                 feeDeductedFromAccount = true;
                 std::cout << languageSupport->getMessage("fee_deducted_from_account") << fee << languageSupport->getMessage("currency_unit") << std::endl;
                 break;
-            } else {
+            }
+            else {
                 // 입금한 금액에서 수수료 차감
                 if (amount >= fee) {
                     amount -= fee;
                     std::cout << languageSupport->getMessage("fee_deducted_from_deposit") << fee << languageSupport->getMessage("currency_unit") << std::endl;
                     break;
-                } else {
+                }
+                else {
                     std::cout << languageSupport->getMessage("insufficient_funds_for_fee") << std::endl;
-                    
+
                     // 추가 입금 요청
                     std::cout << languageSupport->getMessage("prompt_additional_deposit") << std::endl;
                     int additionalAmount = 0;
@@ -86,7 +90,8 @@ bool DepositTransaction::execute() {
                                 continue;
                             }
                             break;
-                        } catch (const std::bad_variant_access&) {
+                        }
+                        catch (const std::bad_variant_access&) {
                             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
                         }
                     }
@@ -99,10 +104,11 @@ bool DepositTransaction::execute() {
         }
 
         // 현금 수락
-        CashManager::getInstance()->acceptCash(insertedCash);
+        cashManager->acceptCash(insertedCash);
         std::cout << languageSupport->getMessage("cash_accepted") << std::endl;
 
-    } else if (depositType == DepositType::CHECK) {
+    }
+    else if (depositType == DepositType::CHECK) {
         // 수표 입금 처리
 
         // 수표 금액이 생성자에서 받은 amount와 일치하는지 확인
@@ -110,7 +116,7 @@ bool DepositTransaction::execute() {
 
         // 수수료를 별도로 현금으로 지불받기
         std::cout << languageSupport->getMessage("check_fee_payment_instruction") << fee << languageSupport->getMessage("currency_unit") << std::endl;
-        
+
         // 현금으로 수수료 지불받기
         std::map<Denomination, int> feeCash;
         int totalFeeInserted = 0;
@@ -128,7 +134,8 @@ bool DepositTransaction::execute() {
                         continue;
                     }
                     break;
-                } catch (const std::bad_variant_access&) {
+                }
+                catch (const std::bad_variant_access&) {
                     std::cout << languageSupport->getMessage("invalid_input") << std::endl;
                 }
             }
@@ -156,7 +163,8 @@ bool DepositTransaction::execute() {
                                 continue;
                             }
                             break;
-                        } catch (const std::bad_variant_access&) {
+                        }
+                        catch (const std::bad_variant_access&) {
                             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
                         }
                     }
@@ -176,7 +184,7 @@ bool DepositTransaction::execute() {
         }
 
         // 수수료 현금 수락
-        CashManager::getInstance()->acceptCash(feeCash);
+        cashManager->acceptCash(feeCash);
         std::cout << languageSupport->getMessage("fee_cash_accepted") << std::endl;
 
         // 수수료는 별도로 현금으로 지불받았으므로, 계좌나 입금 금액에서 수수료를 차감할 필요가 없습니다.
@@ -185,7 +193,7 @@ bool DepositTransaction::execute() {
     // 계좌에 금액 입금
     account->deposit(amount);
     std::cout << languageSupport->getMessage("deposit_success") << amount << languageSupport->getMessage("currency_unit") << ", "
-              << languageSupport->getMessage("account_number") << ": " << account->getAccountNumber() << std::endl;
+        << languageSupport->getMessage("account_number") << ": " << account->getAccountNumber() << std::endl;
 
     return true;
 }
@@ -195,7 +203,8 @@ void DepositTransaction::rollback() {
         // 입금된 금액 반환
         if (amount > 0 && account->withdraw(amount)) {
             std::cout << languageSupport->getMessage("rollback_success") << amount << languageSupport->getMessage("currency_unit") << std::endl;
-        } else {
+        }
+        else {
             std::cout << languageSupport->getMessage("rollback_failed") << std::endl;
         }
 
@@ -207,7 +216,8 @@ void DepositTransaction::rollback() {
 
         // 수표 입금 시 별도로 현금으로 지불한 수수료는 환불 로직을 추가해야 할 수 있습니다.
         // 예: CashManager를 통해 환불 처리
-    } catch (const std::exception& e) {
+    }
+    catch (const std::exception& e) {
         std::cout << languageSupport->getMessage("rollback_error") << e.what() << std::endl;
     }
 }
@@ -215,9 +225,9 @@ void DepositTransaction::rollback() {
 void DepositTransaction::printDetails() const {
     std::string type = (depositType == DepositType::CASH) ? languageSupport->getMessage("cash") : languageSupport->getMessage("check");
     std::cout << languageSupport->getMessage("deposit_transaction_details")
-              << " [ID: " << transactionID << ", "
-              << languageSupport->getMessage("amount") << ": " << amount << ", "
-              << languageSupport->getMessage("fee") << ": " << fee << ", "
-              << languageSupport->getMessage("account_number") << ": " << account->getAccountNumber() << ", "
-              << languageSupport->getMessage("type") << ": " << type << "]" << std::endl;
+        << " [ID: " << transactionID << ", "
+        << languageSupport->getMessage("amount") << ": " << amount << ", "
+        << languageSupport->getMessage("fee") << ": " << fee << ", "
+        << languageSupport->getMessage("account_number") << ": " << account->getAccountNumber() << ", "
+        << languageSupport->getMessage("type") << ": " << type << "]" << std::endl;
 }
