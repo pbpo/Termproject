@@ -1,4 +1,5 @@
 #include "BankManager.hpp"
+#include <iostream>
 
 // Initialize the singleton instance to nullptr
 BankManager* BankManager::instance = nullptr;
@@ -28,4 +29,25 @@ Bank* BankManager::getBank(const std::string& bankName) {
 // Get all banks
 const std::map<std::string, Bank*>& BankManager::getAllBanks() const {
     return banks;
+}
+
+// Function to get all accounts from all banks
+std::map<std::string, std::shared_ptr<Account>> BankManager::getAllAccounts() const {
+    std::map<std::string, std::shared_ptr<Account>> allAccounts;
+
+    for (const auto& bankPair : banks) {
+        const auto& bankAccounts = bankPair.second->getAllAccounts();
+        allAccounts.insert(bankAccounts.begin(), bankAccounts.end());
+    }
+
+    return allAccounts;
+}
+
+// Function to print all accounts from all banks
+void BankManager::printAllAccounts() const {
+    for (const auto& bankPair : banks) {
+        std::cout << "Bank: " << bankPair.first << std::endl;
+        bankPair.second->printAllAccounts();
+        std::cout << "---------------------------------" << std::endl;
+    }
 }
