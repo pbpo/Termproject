@@ -34,6 +34,7 @@ void SystemSetupTest::test_1() {
         "123456",   // Valid
         "12345",    // Too short
         "1234567",  // Too long
+        "123456",   // same digit
         "ABCDEF"    // Non-numeric
     };
 
