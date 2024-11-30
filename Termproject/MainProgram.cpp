@@ -25,7 +25,7 @@ bool isValidAccountNumber(const std::string& accountNumber) {
 }
 void initializeSystem() {
     // Initialize bank
-    auto primaryBank = std::make_shared<Bank>("Primary Bank");
+    BankManager* manager = BankManager::getInstance();
 
     // Get account information from user
     int numAccounts = 0;
@@ -48,13 +48,13 @@ void initializeSystem() {
         std::string bankName, ownerName, accountNumber, password;
         int initialBalance;
 
-         // 입력 받기: 은행 이름
+        // 입력 받기: 은행 이름
         bankName = std::get<std::string>(InputHandler::getInput("Enter bank name for account " + std::to_string(i + 1) + ": ", InputType::STRING));
 
         // 입력 받기: 소유자 이름
         ownerName = std::get<std::string>(InputHandler::getInput("Enter owner name for account " + std::to_string(i + 1) + ": ", InputType::STRING));
 
-         // 입력 받기: 12자리 계좌 번호 검증
+        // 입력 받기: 12자리 계좌 번호 검증
         while (true) {
             accountNumber = std::get<std::string>(InputHandler::getInput("Enter 12-digit account number for account " + std::to_string(i + 1) + ": ", InputType::STRING));
             if (isValidAccountNumber(accountNumber)) {
@@ -96,8 +96,19 @@ void initializeSystem() {
         }
 
         // ���� ���� �� �߰�
-        auto account = std::make_shared<Account>(bankName, ownerName, accountNumber, initialBalance);
-        primaryBank->addAccount(account);
+        Bank* bank = manager->getBank(bankName);
+        if (!bank) {
+            // If the bank doesn't exist, create and add it
+            manager->addBank(new Bank(bankName));
+            bank = manager->getBank(bankName); // Retrieve the newly added bank
+        }
+        // Add an account to the bank
+        if (bank) {
+            auto account = std::make_shared<Account>(bankName, ownerName, accountNumber, initialBalance);
+            bank->addAccount(account);
+        } else {
+            std::cerr << "Error: Bank with name '" << bankName << "' could not be found in BankManager." << std::endl;
+        }
 
         // ����� ���� ���� �߰�
         SecurityManager::getInstance()->addUser(accountNumber, password, bankName); // ����ڰ� ������ ��й�ȣ ���
@@ -173,6 +184,32 @@ void initializeSystem() {
     }
     ATMType atmType = (atmTypeInput == 1) ? ATMType::SINGLE : ATMType::MULTI;
 
+
+    // If SINGLE, select a bank
+    std::shared_ptr<Bank> primaryBank = nullptr;
+    if (atmType == ATMType::SINGLE) {
+        while (true) {
+            auto bankNameVariant = InputHandler::getInput("Enter the bank name for the Single Bank ATM: ", InputType::STRING);
+            try {
+                std::string bankName = std::get<std::string>(bankNameVariant);
+
+                // Get the bank from BankManager
+                Bank* rawBank = BankManager::getInstance()->getBank(bankName);
+                if (rawBank) {
+                    primaryBank = std::shared_ptr<Bank>(rawBank, [](Bank*) {}); // Create a shared_ptr without deleting rawBank
+                    std::cout << "Bank '" << bankName << "' selected for this ATM." << std::endl;
+                    break;
+                }
+                else {
+                    std::cout << "Bank '" << bankName << "' does not exist. Please enter a valid bank name." << std::endl;
+                }
+            }
+            catch (const std::bad_variant_access&) {
+                std::cout << "Invalid input. Please enter a valid bank name." << std::endl;
+            }
+        }
+    }
+
     // ATM ��� ����
     while (true) {
         auto bilingualVariant = InputHandler::getInput("Is the ATM bilingual? (1. Yes 2. No): ", InputType::INT);
@@ -192,6 +229,15 @@ void initializeSystem() {
 
     // Create ATM
     ATM atm(serialNumber, atmType, primaryBank, isBilingual);
+
+    if (atmType == ATMType::SINGLE && primaryBank) {
+        ATM atm(serialNumber, atmType, primaryBank, isBilingual); // Pass raw pointer to ATM constructor
+        std::cout << "Single Bank ATM created for bank: " << primaryBank->getBankName() << std::endl;
+    }
+    else {
+        ATM atm(serialNumber, atmType, isBilingual); // Multi-Bank ATM doesn't require a primary bank
+        std::cout << "Multi-Bank ATM created." << std::endl;
+    }
 
     // Set ATM and Bank in SystemStatus
     SystemStatus::getInstance()->setATM(&atm);
