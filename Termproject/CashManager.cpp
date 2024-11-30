@@ -1,23 +1,13 @@
-// CashManager.cpp
 #include "CashManager.hpp"
 #include <iostream>
 #include <algorithm>
 #include "Exceptions.hpp"
-
-CashManager* CashManager::instance = nullptr;
 
 CashManager::CashManager() {
     // Initialize with zero cash; the bank will deposit cash during initialization
     for (const auto& pair : DENOMINATION_VALUES) {
         cashInventory[pair.first] = 0;
     }
-}
-
-CashManager* CashManager::getInstance() {
-    if (instance == nullptr) {
-        instance = new CashManager();
-    }
-    return instance;
 }
 
 bool CashManager::dispenseCash(int amount, std::map<Denomination, int>& dispensedCash) {
@@ -47,7 +37,8 @@ bool CashManager::dispenseCash(int amount, std::map<Denomination, int>& dispense
             cashInventory[pair.first] -= pair.second;
         }
         return true;
-    } else {
+    }
+    else {
         // Cannot dispense the exact amount with available denominations
         dispensedCash.clear();
         return false;
