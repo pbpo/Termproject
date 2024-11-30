@@ -1,4 +1,5 @@
 // TransactionLogger.cpp
+#define _CRT_SECURE_NO_WARNINGS
 #include "TransactionLogger.hpp"
 #include <chrono>
 #include <iomanip>

@@ -2,7 +2,6 @@
 #include <memory>
 #include <string>
 #include "CashManager.hpp"
-#include "Bank.hpp"
 
 class Bank;
 
@@ -12,10 +11,10 @@ protected:
     int amount;
     std::string cardNumber;
     CashManager* cashManager;
-    std::shared_ptr<Bank> primaryBank;
+    std::string primaryBank;
 
 public:
-    ITransaction(std::shared_ptr<Bank> primaryBank, CashManager* cashManager, const std::string& transactionID, int amount, const std::string& cardNumber)
+    ITransaction(std::string primaryBank, CashManager* cashManager, const std::string& transactionID, int amount, const std::string& cardNumber)
         : primaryBank(primaryBank),cashManager(cashManager),transactionID(transactionID), amount(amount), cardNumber(cardNumber) {}
 
     virtual ~ITransaction() = default;

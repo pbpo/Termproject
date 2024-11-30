@@ -13,8 +13,8 @@
 #include "InputHandler.hpp"
 #include "Bank.hpp" 
 
-TransferTransaction::TransferTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& sourceAccount, const std::shared_ptr<Account>& destinationAccount, TransferType transferType, const std::string& cardNumber)
-    : ITransaction(primaryBank,cashManager, transactionID, amount, cardNumber), sourceAccount(sourceAccount), destinationAccount(destinationAccount), transferType(transferType), fee(0) {}
+TransferTransaction::TransferTransaction(std::string primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& sourceAccount, const std::shared_ptr<Account>& destinationAccount, TransferType transferType, const std::string& cardNumber)
+    : ITransaction(primaryBank, cashManager, transactionID, amount, cardNumber), sourceAccount(sourceAccount), destinationAccount(destinationAccount), transferType(transferType), fee(0) {}
 bool TransferTransaction::execute() {
     auto systemStatus = SystemStatus::getInstance();
     Bank* globalBank = systemStatus->getBank();
@@ -22,14 +22,14 @@ bool TransferTransaction::execute() {
     if (transferType == TransferType::ACCOUNT) {
         // Fee calculation
         if (sourceAccount->getBankName() == destinationAccount->getBankName()) {
-            if (sourceAccount->getBankName() == globalBank->getBankName()) {
+            if (sourceAccount->getBankName() == primaryBank) {
                 fee = 2000; // Between primary banks
             } else {
                 fee = 4000; // Between non-primary banks
             }
         } else {
             if (sourceAccount->getBankName() == globalBank->getBankName() ||
-                destinationAccount->getBankName() == globalBank->getBankName()) {
+                destinationAccount->getBankName() == primaryBank) {
                 fee = 3000; // Between primary and non-primary bank
             } else {
                 fee = 4000; // Between non-primary banks

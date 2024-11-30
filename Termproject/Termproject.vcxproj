@@ -140,7 +140,6 @@
     <ClCompile Include="DepositTransaction.cpp" />
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="LanguageSupport.cpp" />
-    <ClCompile Include="LanguageSupportTest.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainProgram.cpp" />
     <ClCompile Include="SecurityManager.cpp" />
@@ -166,7 +165,6 @@
     <ClInclude Include="ISubject.hpp" />
     <ClInclude Include="ITransaction.hpp" />
     <ClInclude Include="LanguageSupport.hpp" />
-    <ClInclude Include="LanguageSupportTest.hpp" />
     <ClInclude Include="MainProgram.hpp" />
     <ClInclude Include="SecurityManager.hpp" />
     <ClInclude Include="SystemStatus.hpp" />

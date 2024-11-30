@@ -16,7 +16,7 @@
 #include "Bank.hpp"
 #include "LanguageSupport.hpp"
 
-WithdrawalTransaction::WithdrawalTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, const std::string& cardNumber)
+WithdrawalTransaction::WithdrawalTransaction(std::string primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, const std::string& cardNumber)
     : ITransaction(primaryBank ,cashManager, transactionID, amount, cardNumber), account(account), fee(0) {}
 
 bool WithdrawalTransaction::execute() {
@@ -26,7 +26,7 @@ bool WithdrawalTransaction::execute() {
     
 
     // 수수료 계산 (REQ 1.8)
-    if (account->getBankName() == atmBank->getBankName()) {
+    if (account->getBankName() == primaryBank) {
         fee = 1000; // 주거래 은행
     }
     else {

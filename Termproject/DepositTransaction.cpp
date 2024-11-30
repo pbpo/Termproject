@@ -9,7 +9,7 @@
 
 
 
-DepositTransaction::DepositTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account,
+DepositTransaction::DepositTransaction(std::string primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account,
     DepositType depositType, const std::string& cardNumber)
     : ITransaction(primaryBank,cashManager, transactionID, amount, cardNumber), account(account), depositType(depositType), fee(0), feeDeductedFromAccount(false) {
     languageSupport = LanguageSupport::getInstance();
@@ -20,7 +20,7 @@ bool DepositTransaction::execute() {
     Bank* globalBank = systemStatus->getBank();
 
     // Calculate fee
-    if (account->getBankName() == globalBank->getBankName()) {
+    if (account->getBankName() == primaryBank) {
         fee = 1000; // Primary bank
     }
     else {

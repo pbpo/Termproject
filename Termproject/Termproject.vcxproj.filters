@@ -42,9 +42,6 @@
     <ClCompile Include="LanguageSupport.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="LanguageSupportTest.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -114,9 +111,6 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="LanguageSupport.hpp">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="LanguageSupportTest.hpp">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="MainProgram.hpp">

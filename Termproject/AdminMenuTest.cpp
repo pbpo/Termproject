@@ -54,7 +54,7 @@ void AdminMenuTest::initializeSystemWithTestData() {
 
 
     // Test accounts for 카카오
-    auto kakaoAccount1 = std::make_shared<Account>("카카오", "Alice", "1", 1000);
+    auto kakaoAccount1 = std::make_shared<Account>("카카오", "Alice", "1", 0);
     kakaoBank->addAccount(kakaoAccount1);
     SecurityManager::getInstance()->addUser("1", "1", "카카오");
 
@@ -86,7 +86,7 @@ void AdminMenuTest::initializeSystemWithTestData() {
 
 
     // Create and initialize the ATM
-    ATM atm("123456", ATMType::MULTI, cashManager, true); // Multi-bank ATM
+    ATM atm("123456", ATMType::MULTI, cashManager, primaryBank, true); // Multi-bank ATM
 
     // Set ATM and primary bank in SystemStatus
     SystemStatus::getInstance()->setATM(&atm);

@@ -18,8 +18,9 @@ public:
         return "TXN" + std::to_string(dis(gen));
     }
 
-    static std::shared_ptr<ITransaction> createDepositTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, int amount, std::shared_ptr<Account> account, DepositType depositType, const std::string& cardNumber) {
+    static std::shared_ptr<ITransaction> createDepositTransaction(std::string primaryBank,CashManager* cashManager, int amount, std::shared_ptr<Account> account, DepositType depositType, const std::string& cardNumber) {
         return std::make_shared<DepositTransaction>(
+            primaryBank,
             cashManager,
             generateTransactionID(),
             amount,
@@ -29,8 +30,9 @@ public:
         );
     }
 
-    static std::shared_ptr<ITransaction> createWithdrawalTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, int amount, std::shared_ptr<Account> account, const std::string& cardNumber) {
+    static std::shared_ptr<ITransaction> createWithdrawalTransaction(std::string primaryBank,CashManager* cashManager, int amount, std::shared_ptr<Account> account, const std::string& cardNumber) {
         return std::make_shared<WithdrawalTransaction>(
+            primaryBank,
             cashManager,
             generateTransactionID(),
             amount,
@@ -39,8 +41,9 @@ public:
         );
     }
 
-    static std::shared_ptr<ITransaction> createTransferTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, int amount, std::shared_ptr<Account> sourceAccount, std::shared_ptr<Account> destinationAccount, TransferType transferType, const std::string& cardNumber) {
+    static std::shared_ptr<ITransaction> createTransferTransaction(std::string primaryBank,CashManager* cashManager, int amount, std::shared_ptr<Account> sourceAccount, std::shared_ptr<Account> destinationAccount, TransferType transferType, const std::string& cardNumber) {
         return std::make_shared<TransferTransaction>(
+            primaryBank,
             cashManager,
             generateTransactionID(),
             amount,
