@@ -54,11 +54,6 @@ bool DepositTransaction::execute() {
             totalBills += count;
         }
 
-        // 입금한 금액이 생성자에서 받은 amount와 일치하는지 확인
-        if (totalInserted != amount) {
-            std::cout << languageSupport->getMessage("amount_mismatch") << std::endl;
-            return false;
-        }
 
         // 수수료를 계좌에서 차감 시도
         if (account->getBalance() >= fee) {
@@ -82,12 +77,10 @@ bool DepositTransaction::execute() {
 
     } else if (depositType == DepositType::CHECK) {
         // 수표 입금 처리
+        
 
         // 수표 금액이 생성자에서 받은 amount와 일치하는지 확인
-        if (amount < 100000) {
-            std::cout << languageSupport->getMessage("min_check_amount") << std::endl;
-            return false;
-        }
+
 
         // 수수료를 계좌에서 차감 시도
         if (account->getBalance() >= fee) {

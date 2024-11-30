@@ -289,10 +289,10 @@ void ATM::showMainMenu() {
     }
 }
 
-// Handle deposit
 void ATM::handleDeposit() {
-    // Select deposit type
-    std::cout << "Select deposit type: 1. Cash 2. Check" << std::endl;
+    // 입금 유형 선택
+    std::cout << languageSupport->getMessage("select_deposit_type") << std::endl;
+    std::cout << "1. " << languageSupport->getMessage("cash") << " 2. " << languageSupport->getMessage("check") << std::endl;
     int depositTypeInput;
     while (true) {
         auto depositTypeVariant = InputHandler::getInput("", InputType::INT);
@@ -309,16 +309,38 @@ void ATM::handleDeposit() {
     }
 
     DepositType depositType = (depositTypeInput == 1) ? DepositType::CASH : DepositType::CHECK;
-auto depositTransaction = TransactionFactory::createDepositTransaction(0, currentAccount, depositType, currentCardNumber);
 
-    // Execute transaction
+    // 입금 금액 입력
+    int amount = 0;
+    while (true) {
+        auto amountVariant = InputHandler::getInput(languageSupport->getMessage("enter_deposit_amount"), InputType::INT);
+        try {
+            amount = std::get<int>(amountVariant);
+            if (amount <= 0) {
+                std::cout << languageSupport->getMessage("invalid_amount") << std::endl;
+                continue;
+            }
+            if (depositType == DepositType::CHECK && amount < 100000) {
+                std::cout << languageSupport->getMessage("min_check_amount") << std::endl;
+                continue;
+            }
+            break;
+        } catch (const std::bad_variant_access&) {
+            std::cout << languageSupport->getMessage("invalid_input") << std::endl;
+        }
+    }
+
+    // DepositTransaction 객체 생성
+    auto depositTransaction = TransactionFactory::createDepositTransaction(amount, currentAccount, depositType, currentCardNumber);
+
+    // 트랜잭션 실행
     if (depositTransaction->execute()) {
-        // Add transaction record
+        // 거래 기록 추가
         currentAccount->addTransaction(depositTransaction);
         addSessionTransaction(depositTransaction);
-        std::cout << "Deposit successful." << std::endl;
+        std::cout << languageSupport->getMessage("deposit_successful") << std::endl;
     } else {
-        std::cout << "Deposit failed." << std::endl;
+        std::cout << languageSupport->getMessage("deposit_failed") << std::endl;
     }
 }
 
