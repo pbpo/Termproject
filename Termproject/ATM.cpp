@@ -17,8 +17,9 @@
 std::set<std::string> ATM::assignedSerialNumbers;
 
 // Constructor for Single-Bank ATM
-ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank> primaryBank, bool isBilingual)
+ATM::ATM(const std::string& serialNumber, ATMType atmType, BankManager* bankManager, std::shared_ptr<Bank> primaryBank, bool isBilingual)
     : atmType(atmType),
+    bankManager(bankManager),
     primaryBank(primaryBank),
     languageSupport(LanguageSupport::getInstance()),
     cashManager(CashManager::getInstance()),
@@ -85,8 +86,9 @@ ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank>
 }
 
 // Constructor for Multi-Bank ATM
-ATM::ATM(const std::string& serialNumber, ATMType atmType, bool isBilingual)
+ATM::ATM(const std::string& serialNumber,  ATMType atmType, BankManager* bankManager, bool isBilingual)
     : atmType(atmType),
+    bankManager(bankManager),
     primaryBank(nullptr),
     languageSupport(LanguageSupport::getInstance()),
     cashManager(CashManager::getInstance()),
@@ -175,6 +177,7 @@ void ATM::startSession() {
             }
             else {
                 // For Multi-Bank ATM, any bank's card is valid
+                
                 isValidCard = securityManager->validateCard(cardNumber);
             }
 
@@ -207,7 +210,7 @@ void ATM::startSession() {
 
                 if (securityManager->authenticateUser(cardNumber, password)) {
                     // Authentication successful
-                    currentAccount = primaryBank->getAccount(cardNumber);
+                    currentAccount = bankManager->getAccount(cardNumber);
                     if (!currentAccount) {
                         std::cout << "Account not found. Please contact the bank." << std::endl;
                         break;
@@ -276,7 +279,7 @@ void ATM::handleAdminMenu() {
 // Display all transaction history
 void ATM::displayAllTransactionHistory() const {
     std::cout << "\n--- All Transaction History ---" << std::endl;
-    for (const auto& pair : primaryBank->getAllAccounts()) {
+    for (const auto& pair : bankManager->getAllAccounts()) {
         auto account = pair.second;
         for (const auto& transaction : account->getTransactionHistory()) {
             transaction->printDetails();
@@ -294,7 +297,7 @@ void ATM::exportTransactionHistoryToFile(const std::string& filename) const {
     }
 
     outFile << "=== Transaction History ===\n";
-    for (const auto& pair : primaryBank->getAllAccounts()) {
+    for (const auto& pair : bankManager->getAllAccounts()) {
         auto account = pair.second;
         for (const auto& transaction : account->getTransactionHistory()) {
             outFile << "Transaction ID: " << transaction->getTransactionID() << ", ";
@@ -565,7 +568,7 @@ void ATM::handleTransfer() {
     }
 
     // Get destination account
-    auto destinationAccount = primaryBank->getAccount(destinationAccountNumber);
+    auto destinationAccount = bankManager->getAccount(destinationAccountNumber);
     if (!destinationAccount) {
         std::cout << "Destination account not found." << std::endl;
         return;
