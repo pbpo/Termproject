@@ -5,11 +5,12 @@
 
 class AdminMenuTest : public TestGroup {
 private:
-    //¿©±â¿¡ Å×½ºÆ®¿¡ ÇÊ¿äÇÑ µ¥ÀÌÅÍ ¼±¾ğÇÏ½Ã¸é µË´Ï´Ù
+    //ì—¬ê¸°ì— í…ŒìŠ¤íŠ¸ì— í•„ìš”í•œ ë°ì´í„° ì„ ì–¸í•˜ì‹œë©´ ë©ë‹ˆë‹¤
 public:
     AdminMenuTest(int groupNumber);
     void test_1() override;
     void test_2() override;
     void test_3() override;
+    void initializeSystemWithTestData();
 };
 #endif
