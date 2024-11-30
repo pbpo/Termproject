@@ -42,6 +42,8 @@ private:
     int wrongPasswordAttempts;
     bool isAdminSession;
 
+    std::vector<std::string> transactionHistory; // 거래 내역 저장
+
     // Internal methods
     void showMainMenu();
     void handleDeposit();
