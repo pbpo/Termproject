@@ -48,13 +48,13 @@ void initializeSystem() {
         std::string bankName, ownerName, accountNumber, password;
         int initialBalance;
 
-        // �Է� �ޱ�: ���� �̸�
+         // 입력 받기: 은행 이름
         bankName = std::get<std::string>(InputHandler::getInput("Enter bank name for account " + std::to_string(i + 1) + ": ", InputType::STRING));
 
-        // �Է� �ޱ�: ������ �̸�
+        // 입력 받기: 소유자 이름
         ownerName = std::get<std::string>(InputHandler::getInput("Enter owner name for account " + std::to_string(i + 1) + ": ", InputType::STRING));
 
-        // �Է� �ޱ�: 12�ڸ� ���� ��ȣ ����
+         // 입력 받기: 12자리 계좌 번호 검증
         while (true) {
             accountNumber = std::get<std::string>(InputHandler::getInput("Enter 12-digit account number for account " + std::to_string(i + 1) + ": ", InputType::STRING));
             if (isValidAccountNumber(accountNumber)) {

@@ -4,12 +4,14 @@
 #include "Account.hpp"
 #include "Utility.hpp"
 #include <memory>
+#include "LanguageSupport.hpp"
 
 class DepositTransaction : public ITransaction {
 private:
     std::shared_ptr<Account> account;
     DepositType depositType;
     int fee;
+    LanguageSupport* languageSupport;
 
 public:
     DepositTransaction(const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, DepositType depositType, const std::string& cardNumber);
