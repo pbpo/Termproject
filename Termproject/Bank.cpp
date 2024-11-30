@@ -16,6 +16,11 @@ std::shared_ptr<Account> Bank::getAccount(const std::string& accountNumber) cons
     return nullptr;
 }
 
+//validateCard추가
+bool Bank::validateCard(const std::string& cardNumber) const {
+    return accounts.find(cardNumber) != accounts.end();
+}
+
 const std::map<std::string, std::shared_ptr<Account>>& Bank::getAllAccounts() const {
     return accounts;
 }
