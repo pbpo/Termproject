@@ -457,7 +457,7 @@ void ATM::handleWithdrawal() {
     }
 
     if (withdrawalCount >= 3) {
-        std::cout << "Maximum number of withdrawals per session exceeded." << std::endl;
+        std::cout << languageSupport->getMessage("Maximum number of withdrawals per session exceeded.") << std::endl;
         return;
     }
 
@@ -474,7 +474,7 @@ void ATM::handleWithdrawal() {
         }
 
         if (amount <= 0 || amount > MAX_WITHDRAWAL_AMOUNT) {
-            std::cout << "Amount must be positive and less than or equal to KRW 500,000. Please try again." << std::endl;
+            std::cout << languageSupport->getMessage("Amount must be positive and less than or equal to KRW 500,000. Please try again.") << std::endl;
             continue;
         }
         break;
@@ -489,7 +489,7 @@ void ATM::handleWithdrawal() {
             // Dispense cash
             std::map<Denomination, int> dispensedCash;
             if (cashManager->dispenseCash(amount, dispensedCash)) {
-                std::cout << "Withdrawal successful." << std::endl;
+                std::cout <<languageSupport->getMessage("Withdrawal successful.") << std::endl;
 
                 // Add transaction record
                 currentAccount->addTransaction(withdrawalTransaction);
@@ -505,7 +505,7 @@ void ATM::handleWithdrawal() {
                     );
                 }
 
-                std::cout << "Dispensed cash:" << std::endl;
+                std::cout << languageSupport->getMessage("Dispensed cash:")<< std::endl;
                 for (const auto& pair : dispensedCash) {
                     std::cout << "KRW " << DENOMINATION_VALUES.at(pair.first) << " x " << pair.second << std::endl;
                 }
@@ -513,7 +513,7 @@ void ATM::handleWithdrawal() {
             else {
                 // Insufficient cash in ATM
                 withdrawalTransaction->rollback();
-                std::cout << "ATM has insufficient cash. Transaction rolled back." << std::endl;
+                std::cout << languageSupport->getMessage("ATM has insufficient cash. Transaction rolled back.") << std::endl;
             }
         }
     }
@@ -525,7 +525,7 @@ void ATM::handleWithdrawal() {
 // Handle Transfer
 void ATM::handleTransfer() {
     // Select transfer type
-    std::cout << "Select transfer type: 1. Cash Transfer 2. Account Transfer" << std::endl;
+    std::cout << languageSupport->getMessage("Select transfer type: 1. Cash Transfer 2. Account Transfer") << std::endl;
     int transferTypeInput;
     auto transferTypeVariant = InputHandler::getInput("", InputType::INT);
     try {
@@ -561,7 +561,7 @@ void ATM::handleTransfer() {
         }
 
         if (destinationAccountNumber.empty()) {
-            std::cout << "Account number cannot be empty. Please try again." << std::endl;
+            std::cout << languageSupport->getMessage("Account number cannot be empty. Please try again.") << std::endl;
             continue;
         }
         break;
@@ -570,7 +570,7 @@ void ATM::handleTransfer() {
     // Get destination account
     auto destinationAccount = bankManager->getAccount(destinationAccountNumber);
     if (!destinationAccount) {
-        std::cout << "Destination account not found." << std::endl;
+        std::cout << languageSupport->getMessage("Destination account not found.") << std::endl;
         return;
     }
 
@@ -587,7 +587,7 @@ void ATM::handleTransfer() {
         }
 
         if (amount <= 0) {
-            std::cout << "Amount must be positive. Please try again." << std::endl;
+            std::cout << languageSupport->getMessage("Amount must be positive. Please try again.") << std::endl;
             continue;
         }
         break;
@@ -611,7 +611,7 @@ void ATM::handleTransfer() {
                     transferTransaction->getAmount()
                 );
             }
-            std::cout << "Transfer successful." << std::endl;
+            std::cout << languageSupport->getMessage("Transfer successful.") << std::endl;
         }
     }
     catch (const ATMException& e) {
