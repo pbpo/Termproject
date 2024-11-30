@@ -16,19 +16,20 @@
 #include "Bank.hpp"
 #include "LanguageSupport.hpp"
 
-WithdrawalTransaction::WithdrawalTransaction(const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, const std::string& cardNumber)
-    : ITransaction(transactionID, amount, cardNumber), account(account), fee(0) {}
+WithdrawalTransaction::WithdrawalTransaction(CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, const std::string& cardNumber)
+    : ITransaction(cashManager, transactionID, amount, cardNumber), account(account), fee(0) {}
 
 bool WithdrawalTransaction::execute() {
     auto systemStatus = SystemStatus::getInstance();
     Bank* atmBank = systemStatus->getBank();
     LanguageSupport* languageSupport = LanguageSupport::getInstance();
-    CashManager* cashManager = CashManager::getInstance();
+    
 
     // 수수료 계산 (REQ 1.8)
     if (account->getBankName() == atmBank->getBankName()) {
         fee = 1000; // 주거래 은행
-    } else {
+    }
+    else {
         fee = 2000; // 타행
     }
 
