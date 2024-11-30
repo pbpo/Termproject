@@ -12,9 +12,12 @@ private:
     DepositType depositType;
     int fee;
     LanguageSupport* languageSupport;
+    bool feeDeductedFromAccount;
 
 public:
-    DepositTransaction(const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, DepositType depositType, const std::string& cardNumber);
+    // amount 매개변수를 추가한 생성자
+    DepositTransaction(const std::string& transactionID, int amount, const std::shared_ptr<Account>& account,
+                       DepositType depositType, const std::string& cardNumber);
 
     bool execute() override;
     void rollback() override;
@@ -25,4 +28,3 @@ public:
 
     int getFee() const { return fee; }
 };
-
