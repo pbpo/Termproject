@@ -2,7 +2,9 @@
 
 #include <map>
 #include <string>
+#include <memory>
 #include "Bank.hpp"
+#include "Account.hpp"
 
 class BankManager {
 private:
@@ -27,4 +29,10 @@ public:
 
     // Get all banks
     const std::map<std::string, Bank*>& getAllBanks() const;
+
+    // Get all accounts from all banks
+    std::map<std::string, std::shared_ptr<Account>> getAllAccounts() const;
+
+    // Print all accounts from all banks
+    void printAllAccounts() const;
 };
