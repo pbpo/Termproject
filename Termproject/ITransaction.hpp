@@ -1,16 +1,18 @@
 #pragma once
 
 #include <string>
+#include "CashManager.hpp"
 
 class ITransaction {
 protected:
     std::string transactionID;
     int amount;
     std::string cardNumber;
+    CashManager* cashManager;
 
 public:
-    ITransaction(const std::string& transactionID, int amount, const std::string& cardNumber)
-        : transactionID(transactionID), amount(amount), cardNumber(cardNumber) {}
+    ITransaction(CashManager* cashManager, const std::string& transactionID, int amount, const std::string& cardNumber)
+        : cashManager(cashManager),transactionID(transactionID), amount(amount), cardNumber(cardNumber) {}
 
     virtual ~ITransaction() = default;
 
