@@ -20,13 +20,16 @@
 #include "InputHandler.hpp"
 #include "Account.hpp"
 #include "TransactionLogger.hpp"
+#include "BankManager.hpp"
+
 class ATM {
 private:
     // ATM unique information
     static std::set<std::string> assignedSerialNumbers;
     std::string serialNumber;
-     
+
     ATMType atmType;
+    BankManager* bankManager;
     std::shared_ptr<Bank> primaryBank;
     bool isBilingual;
 
@@ -41,7 +44,7 @@ private:
     std::vector<std::shared_ptr<ITransaction>> sessionTransactions;
     int wrongPasswordAttempts;
     bool isAdminSession;
-std::unique_ptr<TransactionLogger> transactionLogger;
+    std::unique_ptr<TransactionLogger> transactionLogger;
     std::vector<std::string> transactionHistory; // 거래 내역 저장
 
     // Internal methods
@@ -57,16 +60,16 @@ std::unique_ptr<TransactionLogger> transactionLogger;
 
 public:
     // Constructor
-    ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank> primaryBank, bool isBilingual);
-ATM(const std::string& serialNumber, ATMType atmType, bool isBilingual);
+    ATM(const std::string& serialNumber, ATMType atmType, BankManager* bankManager, std::shared_ptr<Bank> primaryBank, bool isBilingual);
+    ATM(const std::string& serialNumber, ATMType atmType, BankManager* bankManager, bool isBilingual);
     // Session management
     void startSession();
 
     // Display cash inventory
     void displayCashInventory() const;
     ATMType getATMType() const { return atmType; }
- bool getIsBilingual() const { return isBilingual; }
+    bool getIsBilingual() const { return isBilingual; }
     // Transaction record management
     void addSessionTransaction(const std::shared_ptr<ITransaction>& transaction);
-    
+
 };
