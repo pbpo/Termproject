@@ -16,6 +16,7 @@ public:
 
     void addAccount(const std::shared_ptr<Account>& account);
     std::shared_ptr<Account> getAccount(const std::string& accountNumber) const;
+    bool validateCard(const std::string& cardNumber) const; //validateCard추가
     const std::map<std::string, std::shared_ptr<Account>>& getAllAccounts() const;
     void printAllAccounts() const;
     const std::string& getBankName() const;
