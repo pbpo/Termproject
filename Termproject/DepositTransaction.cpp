@@ -53,6 +53,7 @@ bool DepositTransaction::execute() {
             totalInserted += denomPair.second * count;
             totalBills += count;
         }
+         this->amount += totalInserted;
 
 
         // 수수료를 계좌에서 차감 시도

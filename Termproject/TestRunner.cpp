@@ -5,7 +5,7 @@
 #include "TestGroup.hpp"
 // 기능별 test 클래스 import
 #include "AdminMenuTest.hpp"
-#include "SystemSetupTest.hpp"
+//#include "SystemSetupTest.hpp"
 #include "LanguageSupportTest.hpp"
 
 
@@ -15,7 +15,7 @@ void runTest() {
     unordered_map<int, shared_ptr<TestGroup>> testGroups;
 
     // 테스트 그룹 추가 (예시)
-    testGroups[1] = make_shared<SystemSetupTest>(1); // groupNumber = 1
+    //testGroups[1] = make_shared<SystemSetupTest>(1); // groupNumber = 1
     //testGroups[2] = make_shared<ATMSessionTest>(2);
     //testGroups[3] = make_shared<UserAuthorizationTest>(3); 
     //testGroups[4] = make_shared<DepositTest>(4); 
