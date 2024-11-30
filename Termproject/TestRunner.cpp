@@ -6,6 +6,7 @@
 // 기능별 test 클래스 import
 #include "AdminMenuTest.hpp"
 #include "SystemSetupTest.hpp"
+#include "LanguageSupportTest.hpp"
 
 
 using namespace std;
@@ -21,7 +22,7 @@ void runTest() {
     //testGroups[5] = make_shared<WithdrawalTest>(5);
     //testGroups[6] = make_shared<TransferTest>(6);
     testGroups[7] = make_shared<AdminMenuTest>(7);
-    //testGroups[8] = make_shared<LanguageSupporTest>(8);
+    testGroups[8] = make_shared<LanguageSupportTest>(8);
     //testGroups[9] = make_shared<DisplaySnapshotTest>(10);
 
     string testKey;
@@ -46,12 +47,14 @@ void runTest() {
             }
 
             if (pos == string::npos) {
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 // 자연수 입력: 그룹 전체 테스트 실행
                 testGroups[groupNumber]->execute();
             }
             else {
                 // 특정 테스트 실행 (e.g., 1.5)
                 int testId = stoi(testKey.substr(pos + 1));
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 testGroups[groupNumber]->execute(testId);
             }
         }
