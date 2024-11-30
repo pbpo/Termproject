@@ -15,166 +15,241 @@ LanguageSupport::LanguageSupport() {
     currentLanguage = Language::ENGLISH;
 
     // Initialize English messages
-    messagesEnglish["invalid_serial"] = "Serial number must be a unique 6-digit number.";
-    messagesEnglish["duplicate_serial"] = "Serial number already assigned to another ATM.";
-    messagesEnglish["denomination_prompt"] = "Enter the number of bills for each denomination:";
-    messagesEnglish["invalid_denomination"] = "Invalid denomination entered.";
-    messagesEnglish["no_cash_entered"] = "No cash entered. Deposit cancelled.";
-    messagesEnglish["deposit_successful"] = "Deposit successful. Total amount deposited: KRW ";
-    messagesEnglish["deposit_failed"] = "Deposit failed.";
-    messagesEnglish["check_deposit_prompt"] = "Enter check amount:";
-    messagesEnglish["check_deposit_successful"] = "Check deposit successful. Amount: KRW ";
-    messagesEnglish["check_deposit_failed"] = "Check deposit failed.";
-    messagesEnglish["withdrawal_amount_prompt"] = "Enter amount to withdraw (multiples of KRW 1000):";
-    messagesEnglish["withdrawal_successful"] = "Withdrawal successful.";
-    messagesEnglish["withdrawal_failed"] = "Withdrawal failed.";
-    messagesEnglish["amount_must_be_multiple"] = "Amount must be in multiples of KRW 1000. Please try again.";
-    messagesEnglish["atm_insufficient_cash"] = "ATM cannot dispense the requested amount with available denominations. Transaction rolled back.";
-    messagesEnglish["invalid_serial_number"] = "Serial number must be a 6-digit number.";
-    messagesEnglish["select_language"] = "Select language:\n1. English\n2. Korean";
-    messagesEnglish["welcome"] = "Welcome to the ATM.";
-    messagesEnglish["enter_card"] = "Please enter your card number:";
-    messagesEnglish["invalid_input"] = "Invalid input. Please try again.";
-    messagesEnglish["card_invalid"] = "Invalid card. Please try again.";
-    messagesEnglish["enter_password"] = "Please enter your password:";
-    messagesEnglish["wrong_password"] = "Incorrect password. Please try again.";
-    messagesEnglish["max_password_attempts"] = "Maximum password attempts exceeded. Session ending.";
-    messagesEnglish["select_transaction"] = "Please select a transaction:";
-    messagesEnglish["invalid_choice"] = "Invalid choice. Please try again.";
-    messagesEnglish["session_end"] = "Thank you for using the ATM. Session ended.";
+    messages["invalid_serial"]["English"] = "Serial number must be a unique 6-digit number.";
+    messages["invalid_serial"]["Korean"] = "일련 번호는 고유한 6자리 숫자여야 합니다.";
 
-    // Additional English message keys
-    messagesEnglish["main_menu_options"] = "1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit";
-    messagesEnglish["select_deposit_type"] = "Select deposit type:";
-    messagesEnglish["deposit_type_options"] = "1. Cash\n2. Check";
-    messagesEnglish["admin_menu"] = "Admin Menu:";
-    messagesEnglish["admin_menu_options"] = "1. View Transaction History\n2. Export Transaction History to File\n3. Exit Admin Menu";
-    messagesEnglish["all_transaction_history_header"] = "--- All Transaction History ---";
-    messagesEnglish["end_transaction_history"] = "--- End of Transaction History ---";
-    messagesEnglish["transaction_history_file_header"] = "=== Transaction History ===";
-    messagesEnglish["transaction_id"] = "Transaction ID";
-    messagesEnglish["card_number"] = "Card Number";
-    messagesEnglish["transaction_type"] = "Type";
-    messagesEnglish["amount"] = "Amount";
-    messagesEnglish["transaction_history_exported"] = "Transaction history exported to";
-    messagesEnglish["transaction_history_successfully_exported"] = "Transaction history successfully exported to";
-    messagesEnglish["max_check_deposit_exceeded"] = "Maximum check deposit amount exceeded. Deposit cancelled.";
-    messagesEnglish["dispensed_cash"] = "Dispensed cash:";
-    messagesEnglish["export_file_open_failed"] = "Failed to open file for writing.";
-    messagesEnglish["positive_amount_required"] = "Amount must be positive. Please try again.";
-    messagesEnglish["max_withdrawals_exceeded"] = "Maximum number of withdrawals per session exceeded.";
-    messagesEnglish["atm_serial_number"] = "ATM Serial Number";
-    messagesEnglish["transaction_summary_header"] = "--- Session Summary ---";
-    messagesEnglish["end_transaction_summary"] = "--- End of Summary ---";
-    messagesEnglish["negative_bill_count"] = "Count cannot be negative. Please try again.";
-    messagesEnglish["enter_bills"] = "Enter number of bills";
-    messagesEnglish["empty_account_number"] = "Account number cannot be empty. Please try again.";
-    messagesEnglish["destination_account_not_found"] = "Destination account not found.";
-    messagesEnglish["transfer_successful"] = "Transfer successful.";
-    messagesEnglish["insert_cash_instruction"] = "Please insert cash as instructed.";
-    messagesEnglish["inserted_amount_mismatch"] = "Inserted amount does not match the required amount.";
-    messagesEnglish["max_bills_exceeded"] = "Maximum number of bills exceeded. Deposit cancelled.";
-    messagesEnglish["cash_accepted"] = "Cash accepted.";
-    messagesEnglish["min_check_amount"] = "Minimum check amount is KRW 100,000.";
-    messagesEnglish["insert_fee_cash"] = "Please insert KRW "; // Fee will be appended dynamically
-    messagesEnglish["insufficient_fee_cash"] = "Insufficient fee cash inserted.";
-    messagesEnglish["fee_cash_accepted"] = "Fee cash accepted.";
-    messagesEnglish["excess_amount_deposited"] = "Excess amount deposited: KRW ";
-    messagesEnglish["deposit_success"] = "Deposit successful.";
-    messagesEnglish["currency"] = "KRW";
-    messagesEnglish["into_account"] = "into account";
-    messagesEnglish["rollback_success"] = "Rollback successful.";
-    messagesEnglish["from_account"] = "from account";
-    messagesEnglish["rollback_failed"] = "Rollback failed.";
-    messagesEnglish["rollback_error"] = "Error during rollback:";
-    messagesEnglish["transaction_type_cash"] = "Cash";
-    messagesEnglish["transaction_type_check"] = "Check";
-    messagesEnglish["deposit_transaction_details"] = "Deposit Transaction Details";
-    messagesEnglish["select_transfer_type"] = "Select transfer type:";
-    messagesEnglish["transfer_type_options"] = "1. Cash Transfer\n2. Account Transfer";
-    messagesEnglish["enter_destination_account"] = "Enter destination account number:";
-    messagesEnglish["invalid_withdrawal_amount"] = "Amount must be positive and less than or equal to KRW 500,000. Please try again.";
+    messages["duplicate_serial"]["English"] = "Serial number already assigned to another ATM.";
+    messages["duplicate_serial"]["Korean"] = "일련 번호가 이미 다른 ATM에 할당되어 있습니다.";
 
-    // Initialize Korean messages
-    messagesKorean["invalid_serial"] = "일련 번호는 고유한 6자리 숫자여야 합니다.";
-    messagesKorean["duplicate_serial"] = "일련 번호가 이미 다른 ATM에 할당되어 있습니다.";
-    messagesKorean["denomination_prompt"] = "각 지폐에 대한 개수를 입력하세요:";
-    messagesKorean["invalid_denomination"] = "잘못된 지폐 단위가 입력되었습니다.";
-    messagesKorean["no_cash_entered"] = "현금이 입력되지 않았습니다. 입금이 취소되었습니다.";
-    messagesKorean["deposit_successful"] = "입금이 완료되었습니다. 총 입금 금액: KRW ";
-    messagesKorean["deposit_failed"] = "입금에 실패하였습니다.";
-    messagesKorean["check_deposit_prompt"] = "수표 금액을 입력하세요:";
-    messagesKorean["check_deposit_successful"] = "수표 입금이 완료되었습니다. 금액: KRW ";
-    messagesKorean["check_deposit_failed"] = "수표 입금에 실패하였습니다.";
-    messagesKorean["withdrawal_amount_prompt"] = "출금할 금액을 입력하세요 (KRW 1000 단위):";
-    messagesKorean["withdrawal_successful"] = "출금이 완료되었습니다.";
-    messagesKorean["withdrawal_failed"] = "출금에 실패하였습니다.";
-    messagesKorean["amount_must_be_multiple"] = "금액은 KRW 1000의 배수여야 합니다. 다시 시도해주세요.";
-    messagesKorean["atm_insufficient_cash"] = "ATM에서 사용 가능한 지폐로 요청한 금액을 지급할 수 없습니다. 거래가 취소되었습니다.";
-    messagesKorean["invalid_serial_number"] = "일련 번호는 6자리 숫자여야 합니다.";
-    messagesKorean["select_language"] = "언어를 선택하세요:\n1. 영어\n2. 한국어";
-    messagesKorean["welcome"] = "ATM에 오신 것을 환영합니다.";
-    messagesKorean["enter_card"] = "카드 번호를 입력하세요:";
-    messagesKorean["invalid_input"] = "유효하지 않은 입력입니다. 다시 시도해주세요.";
-    messagesKorean["card_invalid"] = "유효하지 않은 카드입니다. 다시 시도해주세요.";
-    messagesKorean["enter_password"] = "비밀번호를 입력하세요:";
-    messagesKorean["wrong_password"] = "비밀번호가 틀렸습니다. 다시 시도해주세요.";
-    messagesKorean["max_password_attempts"] = "비밀번호 입력 허용 횟수를 초과했습니다. 세션을 종료합니다.";
-    messagesKorean["select_transaction"] = "거래를 선택하세요:";
-    messagesKorean["invalid_choice"] = "잘못된 선택입니다. 다시 시도해주세요.";
-    messagesKorean["session_end"] = "ATM을 이용해 주셔서 감사합니다. 세션이 종료되었습니다.";
+    messages["denomination_prompt"]["English"] = "Enter the number of bills for each denomination:";
+    messages["denomination_prompt"]["Korean"] = "각 지폐에 대한 개수를 입력하세요:";
 
-    // Additional Korean message keys
-    messagesKorean["main_menu_options"] = "1. 입금\n2. 출금\n3. 송금\n4. 종료";
-    messagesKorean["select_deposit_type"] = "입금 유형을 선택하세요:";
-    messagesKorean["deposit_type_options"] = "1. 현금\n2. 수표";
-    messagesKorean["admin_menu"] = "관리자 메뉴:";
-    messagesKorean["admin_menu_options"] = "1. 거래 내역 보기\n2. 거래 내역 파일로 내보내기\n3. 관리자 메뉴 종료";
-    messagesKorean["all_transaction_history_header"] = "--- 모든 거래 내역 ---";
-    messagesKorean["end_transaction_history"] = "--- 거래 내역 끝 ---";
-    messagesKorean["transaction_history_file_header"] = "=== 거래 내역 ===";
-    messagesKorean["transaction_id"] = "거래 ID";
-    messagesKorean["card_number"] = "카드 번호";
-    messagesKorean["transaction_type"] = "유형";
-    messagesKorean["amount"] = "금액";
-    messagesKorean["transaction_history_exported"] = "거래 내역이 다음 파일로 내보내졌습니다:";
-    messagesKorean["transaction_history_successfully_exported"] = "거래 내역이 성공적으로 다음 파일로 내보내졌습니다:";
-    messagesKorean["max_check_deposit_exceeded"] = "수표 입금 최대 금액을 초과했습니다. 입금이 취소되었습니다.";
-    messagesKorean["dispensed_cash"] = "지급된 현금:";
-    messagesKorean["export_file_open_failed"] = "파일을 열어 쓰기에 실패했습니다.";
-    messagesKorean["positive_amount_required"] = "금액은 양수여야 합니다. 다시 시도해주세요.";
-    messagesKorean["max_withdrawals_exceeded"] = "세션당 최대 출금 횟수를 초과했습니다.";
-    messagesKorean["atm_serial_number"] = "ATM 일련 번호";
-    messagesKorean["transaction_summary_header"] = "--- 세션 요약 ---";
-    messagesKorean["end_transaction_summary"] = "--- 요약 끝 ---";
-    messagesKorean["negative_bill_count"] = "지폐 수는 음수가 될 수 없습니다. 다시 시도해주세요.";
-    messagesKorean["enter_bills"] = "지폐 수 입력";
-    messagesKorean["empty_account_number"] = "계좌 번호는 비워둘 수 없습니다. 다시 시도해주세요.";
-    messagesKorean["destination_account_not_found"] = "목적지 계좌를 찾을 수 없습니다.";
-    messagesKorean["transfer_successful"] = "송금이 완료되었습니다.";
-    messagesKorean["insert_cash_instruction"] = "지시대로 현금을 삽입하세요.";
-    messagesKorean["inserted_amount_mismatch"] = "삽입된 금액이 필요한 금액과 일치하지 않습니다.";
-    messagesKorean["max_bills_exceeded"] = "지폐 수가 최대치를 초과했습니다. 입금이 취소되었습니다.";
-    messagesKorean["cash_accepted"] = "현금이 접수되었습니다.";
-    messagesKorean["min_check_amount"] = "수표의 최소 금액은 KRW 100,000입니다.";
-    messagesKorean["insert_fee_cash"] = "수수료로 KRW "; // Fee will be appended dynamically
-    messagesKorean["insufficient_fee_cash"] = "수수료 현금이 부족합니다.";
-    messagesKorean["fee_cash_accepted"] = "수수료 현금이 접수되었습니다.";
-    messagesKorean["excess_amount_deposited"] = "초과 금액이 입금되었습니다: KRW ";
-    messagesKorean["deposit_success"] = "입금이 완료되었습니다.";
-    messagesKorean["currency"] = "KRW";
-    messagesKorean["into_account"] = "계좌로";
-    messagesKorean["rollback_success"] = "롤백이 완료되었습니다.";
-    messagesKorean["from_account"] = "계좌에서";
-    messagesKorean["rollback_failed"] = "롤백에 실패했습니다.";
-    messagesKorean["rollback_error"] = "롤백 중 오류 발생:";
-    messagesKorean["transaction_type_cash"] = "현금";
-    messagesKorean["transaction_type_check"] = "수표";
-    messagesKorean["deposit_transaction_details"] = "입금 거래 세부 정보";
-    messagesKorean["select_transfer_type"] = "송금 유형을 선택하세요:";
-    messagesKorean["transfer_type_options"] = "1. 현금 송금\n2. 계좌 송금";
-    messagesKorean["enter_destination_account"] = "목적지 계좌 번호를 입력하세요:";
-    messagesKorean["invalid_withdrawal_amount"] = "금액은 양수이고 KRW 500,000 이하이어야 합니다. 다시 시도해주세요.";
+    messages["invalid_denomination"]["English"] = "Invalid denomination entered.";
+    messages["invalid_denomination"]["Korean"] = "잘못된 지폐 단위가 입력되었습니다.";
+
+    messages["no_cash_entered"]["English"] = "No cash entered. Deposit cancelled.";
+    messages["no_cash_entered"]["Korean"] = "현금이 입력되지 않았습니다. 입금이 취소되었습니다.";
+
+    messages["deposit_successful"]["English"] = "Deposit successful. Total amount deposited: KRW ";
+    messages["deposit_successful"]["Korean"] = "입금이 완료되었습니다. 총 입금 금액: KRW ";
+
+    messages["deposit_failed"]["English"] = "Deposit failed.";
+    messages["deposit_failed"]["Korean"] = "입금에 실패하였습니다.";
+
+    messages["check_deposit_prompt"]["English"] = "Enter check amount:";
+    messages["check_deposit_prompt"]["Korean"] = "수표 금액을 입력하세요:";
+
+    messages["check_deposit_successful"]["English"] = "Check deposit successful. Amount: KRW ";
+    messages["check_deposit_successful"]["Korean"] = "수표 입금이 완료되었습니다. 금액: KRW ";
+
+    messages["check_deposit_failed"]["English"] = "Check deposit failed.";
+    messages["check_deposit_failed"]["Korean"] = "수표 입금에 실패하였습니다.";
+
+    messages["withdrawal_amount_prompt"]["English"] = "Enter amount to withdraw (multiples of KRW 1000):";
+    messages["withdrawal_amount_prompt"]["Korean"] = "출금할 금액을 입력하세요 (KRW 1000 단위):";
+
+    messages["withdrawal_successful"]["English"] = "Withdrawal successful.";
+    messages["withdrawal_successful"]["Korean"] = "출금이 완료되었습니다.";
+
+    messages["withdrawal_failed"]["English"] = "Withdrawal failed.";
+    messages["withdrawal_failed"]["Korean"] = "출금에 실패하였습니다.";
+
+    messages["amount_must_be_multiple"]["English"] = "Amount must be in multiples of KRW 1000. Please try again.";
+    messages["amount_must_be_multiple"]["Korean"] = "금액은 KRW 1000의 배수여야 합니다. 다시 시도해주세요.";
+
+    messages["atm_insufficient_cash"]["English"] = "ATM cannot dispense the requested amount with available denominations. Transaction rolled back.";
+    messages["atm_insufficient_cash"]["Korean"] = "ATM에서 사용 가능한 지폐로 요청한 금액을 지급할 수 없습니다. 거래가 취소되었습니다.";
+
+    messages["invalid_serial_number"]["English"] = "Serial number must be a 6-digit number.";
+    messages["invalid_serial_number"]["Korean"] = "일련 번호는 6자리 숫자여야 합니다.";
+
+    messages["select_language"]["English"] = "Select language:\n1. English\n2. Korean";
+    messages["select_language"]["Korean"] = "언어를 선택하세요:\n1. 영어\n2. 한국어";
+
+    messages["welcome"]["English"] = "Welcome to the ATM.";
+    messages["welcome"]["Korean"] = "ATM에 오신 것을 환영합니다.";
+
+    messages["enter_card"]["English"] = "Please enter your card number:";
+    messages["enter_card"]["Korean"] = "카드 번호를 입력하세요:";
+
+    messages["invalid_input"]["English"] = "Invalid input. Please try again.";
+    messages["invalid_input"]["Korean"] = "유효하지 않은 입력입니다. 다시 시도해주세요.";
+
+    messages["card_invalid"]["English"] = "Invalid card. Please try again.";
+    messages["card_invalid"]["Korean"] = "유효하지 않은 카드입니다. 다시 시도해주세요.";
+
+    messages["enter_password"]["English"] = "Please enter your password:";
+    messages["enter_password"]["Korean"] = "비밀번호를 입력하세요:";
+
+    messages["wrong_password"]["English"] = "Incorrect password. Please try again.";
+    messages["wrong_password"]["Korean"] = "비밀번호가 틀렸습니다. 다시 시도해주세요.";
+
+    messages["max_password_attempts"]["English"] = "Maximum password attempts exceeded. Session ending.";
+    messages["max_password_attempts"]["Korean"] = "비밀번호 입력 허용 횟수를 초과했습니다. 세션을 종료합니다.";
+
+    messages["select_transaction"]["English"] = "Please select a transaction:";
+    messages["select_transaction"]["Korean"] = "거래를 선택하세요:";
+
+    messages["invalid_choice"]["English"] = "Invalid choice. Please try again.";
+    messages["invalid_choice"]["Korean"] = "잘못된 선택입니다. 다시 시도해주세요.";
+
+    messages["session_end"]["English"] = "Thank you for using the ATM. Session ended.";
+    messages["session_end"]["Korean"] = "ATM을 이용해 주셔서 감사합니다. 세션이 종료되었습니다.";
+
+    messages["main_menu_options"]["English"] = "1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit";
+    messages["main_menu_options"]["Korean"] = "1. 입금\n2. 출금\n3. 송금\n4. 종료";
+
+    messages["select_deposit_type"]["English"] = "Select deposit type:";
+    messages["select_deposit_type"]["Korean"] = "입금 유형을 선택하세요:";
+
+    messages["deposit_type_options"]["English"] = "1. Cash\n2. Check";
+    messages["deposit_type_options"]["Korean"] = "1. 현금\n2. 수표";
+
+    messages["admin_menu"]["English"] = "Admin Menu:";
+    messages["admin_menu"]["Korean"] = "관리자 메뉴:";
+
+    messages["admin_menu_options"]["English"] = "1. View Transaction History\n2. Export Transaction History to File\n3. Exit Admin Menu";
+    messages["admin_menu_options"]["Korean"] = "1. 거래 내역 보기\n2. 거래 내역 파일로 내보내기\n3. 관리자 메뉴 종료";
+
+    messages["all_transaction_history_header"]["English"] = "--- All Transaction History ---";
+    messages["all_transaction_history_header"]["Korean"] = "--- 모든 거래 내역 ---";
+
+    messages["end_transaction_history"]["English"] = "--- End of Transaction History ---";
+    messages["end_transaction_history"]["Korean"] = "--- 거래 내역 끝 ---";
+
+    messages["transaction_history_file_header"]["English"] = "=== Transaction History ===";
+    messages["transaction_history_file_header"]["Korean"] = "=== 거래 내역 ===";
+
+    messages["transaction_id"]["English"] = "Transaction ID";
+    messages["transaction_id"]["Korean"] = "거래 ID";
+
+    messages["card_number"]["English"] = "Card Number";
+    messages["card_number"]["Korean"] = "카드 번호";
+
+    messages["transaction_type"]["English"] = "Type";
+    messages["transaction_type"]["Korean"] = "유형";
+
+    messages["amount"]["English"] = "Amount";
+    messages["amount"]["Korean"] = "금액";
+
+    messages["transaction_history_exported"]["English"] = "Transaction history exported to";
+    messages["transaction_history_exported"]["Korean"] = "거래 내역이 다음 파일로 내보내졌습니다:";
+
+    messages["transaction_history_successfully_exported"]["English"] = "Transaction history successfully exported to";
+    messages["transaction_history_successfully_exported"]["Korean"] = "거래 내역이 성공적으로 다음 파일로 내보내졌습니다:";
+
+    messages["max_check_deposit_exceeded"]["English"] = "Maximum check deposit amount exceeded. Deposit cancelled.";
+    messages["max_check_deposit_exceeded"]["Korean"] = "수표 입금 최대 금액을 초과했습니다. 입금이 취소되었습니다.";
+
+    messages["dispensed_cash"]["English"] = "Dispensed cash:";
+    messages["dispensed_cash"]["Korean"] = "지급된 현금:";
+
+    messages["export_file_open_failed"]["English"] = "Failed to open file for writing.";
+    messages["export_file_open_failed"]["Korean"] = "파일을 열어 쓰기에 실패했습니다.";
+
+    messages["positive_amount_required"]["English"] = "Amount must be positive. Please try again.";
+    messages["positive_amount_required"]["Korean"] = "금액은 양수여야 합니다. 다시 시도해주세요.";
+
+    messages["max_withdrawals_exceeded"]["English"] = "Maximum number of withdrawals per session exceeded.";
+    messages["max_withdrawals_exceeded"]["Korean"] = "세션당 최대 출금 횟수를 초과했습니다.";
+
+    messages["atm_serial_number"]["English"] = "ATM Serial Number";
+    messages["atm_serial_number"]["Korean"] = "ATM 일련 번호";
+
+    messages["transaction_summary_header"]["English"] = "--- Session Summary ---";
+    messages["transaction_summary_header"]["Korean"] = "--- 세션 요약 ---";
+
+    messages["end_transaction_summary"]["English"] = "--- End of Summary ---";
+    messages["end_transaction_summary"]["Korean"] = "--- 요약 끝 ---";
+
+    messages["negative_bill_count"]["English"] = "Count cannot be negative. Please try again.";
+    messages["negative_bill_count"]["Korean"] = "지폐 수는 음수가 될 수 없습니다. 다시 시도해주세요.";
+
+    messages["enter_bills"]["English"] = "Enter number of bills:";
+    messages["enter_bills"]["Korean"] = "지폐 수를 입력하세요:";
+
+    messages["empty_account_number"]["English"] = "Account number cannot be empty. Please try again.";
+    messages["empty_account_number"]["Korean"] = "계좌 번호는 비워둘 수 없습니다. 다시 시도해주세요.";
+
+    messages["destination_account_not_found"]["English"] = "Destination account not found.";
+    messages["destination_account_not_found"]["Korean"] = "목적지 계좌를 찾을 수 없습니다.";
+
+    messages["transfer_successful"]["English"] = "Transfer successful.";
+    messages["transfer_successful"]["Korean"] = "송금이 완료되었습니다.";
+
+    messages["insert_cash_instruction"]["English"] = "Please insert cash as instructed.";
+    messages["insert_cash_instruction"]["Korean"] = "지시대로 현금을 삽입하세요.";
+
+    messages["inserted_amount_mismatch"]["English"] = "Inserted amount does not match the required amount.";
+    messages["inserted_amount_mismatch"]["Korean"] = "삽입된 금액이 필요한 금액과 일치하지 않습니다.";
+
+    messages["max_bills_exceeded"]["English"] = "Maximum number of bills exceeded. Deposit cancelled.";
+    messages["max_bills_exceeded"]["Korean"] = "지폐 수가 최대치를 초과했습니다. 입금이 취소되었습니다.";
+
+    messages["cash_accepted"]["English"] = "Cash accepted.";
+    messages["cash_accepted"]["Korean"] = "현금이 접수되었습니다.";
+
+    messages["min_check_amount"]["English"] = "Minimum check amount is KRW 100,000.";
+    messages["min_check_amount"]["Korean"] = "수표의 최소 금액은 KRW 100,000입니다.";
+
+    messages["insert_fee_cash"]["English"] = "Please insert KRW "; // Fee will be appended dynamically
+    messages["insert_fee_cash"]["Korean"] = "KRW을(를) 삽입해주세요: "; // 수수료가 동적으로 추가됩니다.
+
+    messages["insufficient_fee_cash"]["English"] = "Insufficient fee cash inserted.";
+    messages["insufficient_fee_cash"]["Korean"] = "수수료 현금이 부족합니다.";
+
+    messages["fee_cash_accepted"]["English"] = "Fee cash accepted.";
+    messages["fee_cash_accepted"]["Korean"] = "수수료 현금이 접수되었습니다.";
+
+    messages["excess_amount_deposited"]["English"] = "Excess amount deposited: KRW ";
+    messages["excess_amount_deposited"]["Korean"] = "초과 금액이 입금되었습니다: KRW ";
+
+    messages["deposit_success"]["English"] = "Deposit successful.";
+    messages["deposit_success"]["Korean"] = "입금이 완료되었습니다.";
+
+    messages["currency"]["English"] = "KRW";
+    messages["currency"]["Korean"] = "KRW";
+
+    messages["into_account"]["English"] = "into account";
+    messages["into_account"]["Korean"] = "계좌로";
+
+    messages["rollback_success"]["English"] = "Rollback successful.";
+    messages["rollback_success"]["Korean"] = "롤백이 완료되었습니다.";
+
+    messages["from_account"]["English"] = "from account";
+    messages["from_account"]["Korean"] = "계좌에서";
+
+    messages["rollback_failed"]["English"] = "Rollback failed.";
+    messages["rollback_failed"]["Korean"] = "롤백에 실패했습니다.";
+
+    messages["rollback_error"]["English"] = "Error during rollback:";
+    messages["rollback_error"]["Korean"] = "롤백 중 오류 발생:";
+
+    messages["transaction_type_cash"]["English"] = "Cash";
+    messages["transaction_type_cash"]["Korean"] = "현금";
+
+    messages["transaction_type_check"]["English"] = "Check";
+    messages["transaction_type_check"]["Korean"] = "수표";
+
+    messages["deposit_transaction_details"]["English"] = "Deposit Transaction Details";
+    messages["deposit_transaction_details"]["Korean"] = "입금 거래 세부 정보";
+
+    messages["select_transfer_type"]["English"] = "Select transfer type:";
+    messages["select_transfer_type"]["Korean"] = "송금 유형을 선택하세요:";
+
+    messages["transfer_type_options"]["English"] = "1. Cash Transfer\n2. Account Transfer";
+    messages["transfer_type_options"]["Korean"] = "1. 현금 송금\n2. 계좌 송금";
+
+    messages["enter_destination_account"]["English"] = "Enter destination account number:";
+    messages["enter_destination_account"]["Korean"] = "목적지 계좌 번호를 입력하세요:";
+
+    messages["invalid_withdrawal_amount"]["English"] = "Amount must be positive and less than or equal to KRW 500,000. Please try again.";
+    messages["invalid_withdrawal_amount"]["Korean"] = "금액은 양수이고 KRW 500,000 이하이어야 합니다. 다시 시도해주세요.";
+
+
+
+
+ 
 
     // **Note:** For messages that require dynamic values (like fees), append them during runtime.
 }
@@ -191,19 +266,19 @@ void LanguageSupport::setLanguage(Language language) {
 }
 
 std::string LanguageSupport::getMessage(const std::string& key) {
-    if (currentLanguage == Language::ENGLISH) {
-        auto it = messagesEnglish.find(key);
-        if (it != messagesEnglish.end()) {
-            return it->second;
-        } else {
-            return "Message not found for key: " + key;
+    std::string langKey = (currentLanguage == Language::ENGLISH) ? "English" : "Korean";
+
+    // Check if the key exists
+    if (messages.find(key) != messages.end()) {
+        // Check if the language exists for the key
+        if (messages[key].find(langKey) != messages[key].end()) {
+            return messages[key][langKey];
         }
-    } else {
-        auto it = messagesKorean.find(key);
-        if (it != messagesKorean.end()) {
-            return it->second;
-        } else {
-            return "메시지를 찾을 수 없습니다: " + key;
-        }
+        return (currentLanguage == Language::ENGLISH)
+            ? "Message not available in selected language."
+            : "선택한 언어로 메시지를 사용할 수 없습니다.";
     }
+    return (currentLanguage == Language::ENGLISH)
+        ? "Message not found for key: " + key
+        : "키에 대한 메시지를 찾을 수 없습니다: " + key;
 }
