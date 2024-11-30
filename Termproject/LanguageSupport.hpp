@@ -13,8 +13,7 @@
 class LanguageSupport {
 private:
     Language currentLanguage;
-    std::map<std::string, std::string> messagesEnglish;
-    std::map<std::string, std::string> messagesKorean;
+    std::map<std::string, std::map<std::string, std::string>> messages;
     LanguageSupport();
     static LanguageSupport* instance;
 
