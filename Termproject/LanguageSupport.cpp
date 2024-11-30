@@ -246,8 +246,75 @@ LanguageSupport::LanguageSupport() {
     messages["invalid_withdrawal_amount"]["English"] = "Amount must be positive and less than or equal to KRW 500,000. Please try again.";
     messages["invalid_withdrawal_amount"]["Korean"] = "금액은 양수이고 KRW 500,000 이하이어야 합니다. 다시 시도해주세요.";
 
+   messages["withdrawal_transaction_details"]["English"] = "Withdrawal Transaction Details";
+    messages["withdrawal_transaction_details"]["Korean"] = "출금 거래 세부 정보";
 
+    messages["fee_deducted"]["English"] = "Fee deducted: KRW ";
+    messages["fee_deducted"]["Korean"] = "수수료 차감: KRW ";
 
+    messages["insufficient_funds_with_fee"]["English"] = "Insufficient funds to withdraw requested amount with fee.";
+    messages["insufficient_funds_with_fee"]["Korean"] = "요청된 금액과 수수료를 출금하기에 잔액이 부족합니다.";
+
+    messages["fee_refunded"]["English"] = "Fee refunded: KRW ";
+    messages["fee_refunded"]["Korean"] = "수수료 환불: KRW ";
+
+    messages["withdrawal_transaction_details"]["English"] = "Withdrawal Transaction Details";
+
+    messages["withdrawal_transaction_details"]["Korean"] = "출금 거래 세부 정보";
+
+    messages["transaction_id"]["English"] = "Transaction ID";
+    messages["transaction_id"]["Korean"] = "거래 ID";
+
+    messages["amount"]["English"] = "Amount";
+    messages["amount"]["Korean"] = "금액";
+
+    messages["fee"]["English"] = "Fee";
+    messages["fee"]["Korean"] = "수수료";
+
+    messages["account_number"]["English"] = "Account Number";
+
+    messages["account_number"]["Korean"] = "계좌 번호";
+
+    messages["withdrawal_successful"]["English"] = "Withdrawal successful. Amount: KRW ";
+    messages["withdrawal_successful"]["Korean"] = "출금이 완료되었습니다. 금액: KRW ";
+
+    messages["rollback_success"]["English"] = "Rollback successful.";
+    messages["rollback_success"]["Korean"] = "롤백이 완료되었습니다.";
+
+    messages["rollback_failed"]["English"] = "Rollback failed.";
+    messages["rollback_failed"]["Korean"] = "롤백에 실패했습니다.";
+
+    messages["rollback_error"]["English"] = "Error during rollback:";
+    messages["rollback_error"]["Korean"] = "롤백 중 오류 발생:";
+
+    messages["withdrawal_transaction_details"]["English"] = "Withdrawal Transaction Details";
+    messages["withdrawal_transaction_details"]["Korean"] = "출금 거래 세부 정보";
+
+    messages["transaction_id"]["English"] = "Transaction ID";
+    messages["transaction_id"]["Korean"] = "거래 ID";
+
+   messages["cash"]["English"] = "Cash";
+    messages["cash"]["Korean"] = "현금";
+
+    messages["check"]["English"] = "Check";
+    messages["check"]["Korean"] = "수표";
+
+    messages["enter_deposit_amount"]["English"] = "Enter deposit amount:";
+    messages["enter_deposit_amount"]["Korean"] = "입금 금액을 입력하세요:";
+
+    messages["invalid_deposit_amount"]["English"] = "Invalid deposit amount. Please try again.";
+    messages["invalid_deposit_amount"]["Korean"] = "유효하지 않은 입금 금액입니다. 다시 시도해주세요.";
+
+    messages["deposit_transaction_details"]["English"] = "Deposit Transaction Details";
+    messages["deposit_transaction_details"]["Korean"] = "입금 거래 세부 정보";
+
+    messages["deposit_type"]["English"] = "Type";
+    messages["deposit_type"]["Korean"] = "유형";
+
+    messages["deposit_transaction_details"]["English"] = "Deposit Transaction Details";
+    messages["deposit_transaction_details"]["Korean"] = "입금 거래 세부 정보";
+
+    
 
  
 
