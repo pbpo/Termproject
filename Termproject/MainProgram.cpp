@@ -228,21 +228,26 @@ void initializeSystem() {
     }
 
     // Create ATM
-    ATM atm(serialNumber, atmType, primaryBank, isBilingual);
 
-    if (atmType == ATMType::SINGLE && primaryBank) {
-        ATM atm(serialNumber, atmType, primaryBank, isBilingual); // Pass raw pointer to ATM constructor
-        std::cout << "Single Bank ATM created for bank: " << primaryBank->getBankName() << std::endl;
-    }
-    else {
-        ATM atm(serialNumber, atmType, isBilingual); // Multi-Bank ATM doesn't require a primary bank
-        std::cout << "Multi-Bank ATM created." << std::endl;
-    }
+        std::unique_ptr<ATM> atmPtr;
 
-    // Set ATM and Bank in SystemStatus
-    SystemStatus::getInstance()->setATM(&atm);
-    SystemStatus::getInstance()->setBank(primaryBank.get());
+    
+        if (atmType == ATMType::SINGLE && primaryBank) {
+            atmPtr = std::make_unique<ATM>(serialNumber, atmType, primaryBank, isBilingual);
+            std::cout << "Single Bank ATM created for bank: " << primaryBank->getBankName() << std::endl;
+        }
+        else {
+            atmPtr = std::make_unique<ATM>(serialNumber, atmType, isBilingual);
+            std::cout << "Multi-Bank ATM created." << std::endl;
+        }
 
-    // Start the program
-    atm.startSession();
+        // SystemStatus에 ATM과 Bank 설정
+        SystemStatus::getInstance()->setATM(atmPtr.get());
+        if (primaryBank) {
+            SystemStatus::getInstance()->setBank(primaryBank.get());
+        }
+
+        // 프로그램 시작
+        atmPtr->startSession();
+    
 };
