@@ -30,6 +30,8 @@ public:
     // Get all banks
     const std::map<std::string, Bank*>& getAllBanks() const;
 
+    std::shared_ptr<Account> getAccount(const std::string& accountNumber) const;
+
     // Get all accounts from all banks
     std::map<std::string, std::shared_ptr<Account>> getAllAccounts() const;
 
