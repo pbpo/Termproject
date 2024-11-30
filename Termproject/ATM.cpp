@@ -17,12 +17,12 @@
 std::set<std::string> ATM::assignedSerialNumbers;
 
 // Constructor for Single-Bank ATM
-ATM::ATM(const std::string& serialNumber, ATMType atmType, BankManager* bankManager, std::shared_ptr<Bank> primaryBank, bool isBilingual)
+ATM::ATM(const std::string& serialNumber, ATMType atmType, CashManager* cashManager, std::shared_ptr<Bank> primaryBank, bool isBilingual)
     : atmType(atmType),
-    bankManager(bankManager),
+    bankManager(BankManager::getInstance()),
     primaryBank(primaryBank),
     languageSupport(LanguageSupport::getInstance()),
-    cashManager(CashManager::getInstance()),
+    cashManager(cashManager),
     securityManager(SecurityManager::getInstance()),
     wrongPasswordAttempts(0),
     isAdminSession(false),
@@ -86,12 +86,12 @@ ATM::ATM(const std::string& serialNumber, ATMType atmType, BankManager* bankMana
 }
 
 // Constructor for Multi-Bank ATM
-ATM::ATM(const std::string& serialNumber,  ATMType atmType, BankManager* bankManager, bool isBilingual)
+ATM::ATM(const std::string& serialNumber,  ATMType atmType, CashManager* cashManager, bool isBilingual)
     : atmType(atmType),
-    bankManager(bankManager),
+    bankManager(BankManager::getInstance()),
     primaryBank(nullptr),
     languageSupport(LanguageSupport::getInstance()),
-    cashManager(CashManager::getInstance()),
+    cashManager(cashManager),
     securityManager(SecurityManager::getInstance()),
     wrongPasswordAttempts(0),
     isAdminSession(false),
