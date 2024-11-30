@@ -62,7 +62,8 @@ public:
 
     // Display cash inventory
     void displayCashInventory() const;
-
+    ATMType getATMType() const { return atmType; }
+ bool getIsBilingual() const { return isBilingual; }
     // Transaction record management
     void addSessionTransaction(const std::shared_ptr<ITransaction>& transaction);
 };

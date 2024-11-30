@@ -8,21 +8,29 @@
 // SystemStatus.hpp
 #pragma once
 
-class ATM;
-class Bank;
+#include "ATM.hpp"
+#include "BankManager.hpp"
 
 class SystemStatus {
 private:
     static SystemStatus* instance;
     ATM* atm;
-    Bank* bank;
 
+    // Singleton pattern: private constructor
     SystemStatus();
-public:
-    static SystemStatus* getInstance();
-    void setATM(ATM* atm);
-    void setBank(Bank* bank);
-    void displayStatus();
 
-    Bank* getBank() const { return bank; }
+public:
+    // Get the singleton instance
+    static SystemStatus* getInstance();
+
+    // Set and get ATM
+    void setATM(ATM* atm);
+    ATM* getATM() const;
+
+    // Keep setBank and getBank methods using Bank*
+    void setBank(Bank* bank);
+    Bank* getBank() const;
+
+    // Display system status
+    void displayStatus();
 };
