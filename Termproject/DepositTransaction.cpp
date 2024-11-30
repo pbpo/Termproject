@@ -178,9 +178,23 @@ bool DepositTransaction::execute() {
         // 정확한 수수료 금액만 차감
         int excess = totalFeeInserted - fee;
         if (excess > 0) {
-            // 환불 처리 (여기서는 간단히 출력)
-            std::cout << languageSupport->getMessage("fee_cash_overpaid") << excess << languageSupport->getMessage("currency_unit") << " 반환됩니다." << std::endl;
-            // 실제로는 환불 로직을 구현해야 합니다.
+            if (excess > 0) {
+            // 환불 처리
+            std::cout << languageSupport->getMessage("fee_cash_overpaid") << excess << languageSupport->getMessage("currency_unit")
+                      << languageSupport->getMessage("will_be_returned") << std::endl;
+
+            // 현금 환불 시도
+            bool refundSuccess = cashManager->dispenseCash(excess, feeCash);
+            if (refundSuccess) {
+                std::cout << languageSupport->getMessage("refund_successful") << excess << languageSupport->getMessage("currency_unit")
+                          << languageSupport->getMessage("has_been_returned") << std::endl;
+            } else {
+                // 환불 실패 시 계좌에 입금
+                account->deposit(excess);
+                std::cout << languageSupport->getMessage("refund_failed_deposited") << excess << languageSupport->getMessage("currency_unit")
+                          << languageSupport->getMessage("deposited_into_account") << std::endl;
+            }
+        }
         }
 
         // 수수료 현금 수락

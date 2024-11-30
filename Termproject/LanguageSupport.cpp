@@ -366,7 +366,27 @@ messages["bill_count_prompt"]["English"] = " bills of KRW ";
 
     messages["] balance: "]["English"] = "] balance: ";
     messages["] balance: "]["Korean"] = "] 잔액: ";
+    
+    messages["fee_cash_overpaid"]["English"] = "Fee cash overpaid: KRW ";
+    messages["fee_cash_overpaid"]["Korean"] = "수수료 현금 초과 지불: KRW ";
 
+    messages["will_be_returned"]["English"] = " will be returned.";
+    messages["will_be_returned"]["Korean"] = " 반환될 것입니다.";
+
+    messages["refund_successful"]["English"] = "Refund successful: KRW ";
+    messages["refund_successful"]["Korean"] = "환불 성공: KRW ";
+
+    messages["has_been_returned"]["English"] = " has been returned.";
+    messages["has_been_returned"]["Korean"] = " 반환되었습니다.";
+
+    messages["refund_failed_deposited"]["English"] = "Refund failed. KRW ";
+    messages["refund_failed_deposited"]["Korean"] = "환불 실패. KRW ";
+
+    messages["deposited_into_account"]["English"] = " deposited into account.";
+    messages["deposited_into_account"]["Korean"] = " 계좌에 입금되었습니다.";
+
+    messages["rollback_initiated"]["English"] = "Rollback initiated.";
+    messages["rollback_initiated"]["Korean"] = "롤백이 시작되었습니다.";
     
 
 }
