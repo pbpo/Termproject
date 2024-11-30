@@ -4,6 +4,8 @@
 #include "CashManager.hpp"
 #include "Bank.hpp"
 
+class Bank;
+
 class ITransaction {
 protected:
     std::string transactionID;

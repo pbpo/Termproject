@@ -14,7 +14,7 @@ string TestGroup::formatTestId(int testIndex) const {
 }
 
 void TestGroup::execute() {
-    // ÀüÃ¼ Å×½ºÆ® ½ÇÇà
+    // ì „ì²´ í…ŒìŠ¤íŠ¸ ì‹¤í–‰
     for (int i = 1; i <= testCount; ++i) {
         cout << "Running test for REQ " << formatTestId(i) << "...\n";
         callTest(i);
@@ -27,7 +27,7 @@ void TestGroup::execute(int testIndex) {
             throw invalid_argument("Invalid test ID: " + formatTestId(testIndex));
         }
         cout << "Running test for REQ" << formatTestId(testIndex) << "...\n";
-        callTest(testIndex); // Æ¯Á¤ Å×½ºÆ® ½ÇÇà
+        callTest(testIndex); // íŠ¹ì • í…ŒìŠ¤íŠ¸ ì‹¤í–‰
     }
     catch (const exception& e) {
         cerr << e.what() << endl;
@@ -57,7 +57,7 @@ void TestGroup::notImplemented(int testIndex) {
     throw invalid_argument("Not implemented: " + formatTestId(testIndex));
 }
 
-// ±âº» Å×½ºÆ® ÇÔ¼ö ±¸Çö
+// ê¸°ë³¸ í…ŒìŠ¤íŠ¸ í•¨ìˆ˜ êµ¬í˜„
 void TestGroup::test_1() { notImplemented(1); }
 void TestGroup::test_2() { notImplemented(2); }
 void TestGroup::test_3() { notImplemented(3); }

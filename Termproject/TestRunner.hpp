@@ -2,7 +2,7 @@
 #define TEST_SYSESTEM_HPP
 
 
-// Å×½ºÆ® ½ÇÇà ·çÇÁ ÇÔ¼ö ¼±¾ð
+// í…ŒìŠ¤íŠ¸ ì‹¤í–‰ ë£¨í”„ í•¨ìˆ˜ ì„ ì–¸
 void runTest();
 
 #endif // TEST_RUNNER_H

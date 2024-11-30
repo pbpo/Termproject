@@ -3,10 +3,10 @@
 
 #include <string>
 	
-// °èÁÂ ¹øÈ£ °ËÁõ ÇÔ¼ö ¼±¾ğ
+// ê³„ì¢Œ ë²ˆí˜¸ ê²€ì¦ í•¨ìˆ˜ ì„ ì–¸
 bool isValidAccountNumber(const std::string& accountNumber);
 
-// ½Ã½ºÅÛ ÃÊ±âÈ­ ÇÔ¼ö ¼±¾ğ
+// ì‹œìŠ¤í…œ ì´ˆê¸°í™” í•¨ìˆ˜ ì„ ì–¸
 void initializeSystem();
 
 #endif

@@ -20,7 +20,7 @@ protected:
     void callTest(int testIndex);
     void notImplemented(int testIndex);
 
-    // Å×½ºÆ® ÇÔ¼ö - ÀÚ½Ä¿¡¼­ ¿À¹ö¶óÀÌµå ÇÊ¿ä
+    // í…ŒìŠ¤íŠ¸ í•¨ìˆ˜ - ìì‹ì—ì„œ ì˜¤ë²„ë¼ì´ë“œ í•„ìš”
     virtual void test_1();
     virtual void test_2();
     virtual void test_3();

@@ -1,4 +1,4 @@
-// Account.cpp (수정)
+// Account.cpp
 #include "Account.hpp"
 
 Account::Account(const std::string& bankName, const std::string& ownerName, const std::string& accountNumber, int initialBalance)
