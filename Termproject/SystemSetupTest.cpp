@@ -17,6 +17,7 @@
 #include <memory>
 #include <set>
 #include <sstream>
+#include "Exceptions.hpp"
 
 SystemSetupTest::SystemSetupTest(int groupNumber) : TestGroup(groupNumber, 11) {
 }
@@ -203,43 +204,63 @@ void SystemSetupTest::test_8() {
     otherBank->addAccount(otherAccount);
     SecurityManager::getInstance()->addUser(otherAccount->getCardNumber(), "password456", otherBank->getBankName());
 
-    ATM atm("123456", ATMType::SINGLE, primaryBank, false);
-    SystemStatus::getInstance()->setATM(&atm);
-    SystemStatus::getInstance()->setBank(primaryBank.get());
-
-    std::istringstream depositInput("1\n0\n10\n0\n"); // KRW 1,000 지폐 1장, KRW 10,000 지폐 10장 입금 (총액 101,000원)
-    auto cin_backup = std::cin.rdbuf(); // std::cin 버퍼 백업
-    std::cin.rdbuf(depositInput.rdbuf()); // std::cin을 depositInput으로 재지정
-
-    auto depositTransactionPrimary = TransactionFactory::createDepositTransaction(100000, primaryAccount, DepositType::CASH, primaryAccount->getCardNumber());
-    depositTransactionPrimary->execute();
-    int fee1 = dynamic_cast<DepositTransaction*>(depositTransactionPrimary.get())->getFee();
-
-    std::cin.rdbuf(cin_backup);
-
-    if (fee1 == 1000) {
-        std::cout << "Test Passed: Deposit fee for primary bank is correctly applied (KRW 1,000).\n";
-    }
-    else {
-        std::cout << "Test Failed: Deposit fee for primary bank is incorrect.\n";
+    // ATM 생성 시 예외 처리 추가
+    ATM* atm = nullptr;
+    try {
+        atm = new ATM("123456", ATMType::SINGLE, primaryBank, false);
+        SystemStatus::getInstance()->setATM(atm);
+        SystemStatus::getInstance()->setBank(primaryBank.get());
+    } catch (const DuplicateSerialNumberException& e) {
+        std::cout << "Exception caught during ATM creation: " << e.what() << "\n";
+        // 다른 시리얼 번호로 ATM 생성 시도
+        atm = new ATM("654321", ATMType::SINGLE, primaryBank, false);
+        SystemStatus::getInstance()->setATM(atm);
+        SystemStatus::getInstance()->setBank(primaryBank.get());
     }
 
+    // DepositTransaction 테스트
+    try {
+        std::istringstream depositInput("1\n0\n10\n0\n"); // KRW 1,000 지폐 1장, KRW 10,000 지폐 10장 입금
+        auto cin_backup = std::cin.rdbuf(); // std::cin 버퍼 백업
+        std::cin.rdbuf(depositInput.rdbuf()); // std::cin을 depositInput으로 재지정
 
-    auto withdrawalTransactionOther = TransactionFactory::createWithdrawalTransaction(100000, otherAccount, otherAccount->getCardNumber());
-    withdrawalTransactionOther->execute();
-    int fee4 = dynamic_cast<WithdrawalTransaction*>(withdrawalTransactionOther.get())->getFee();
+        auto depositTransactionPrimary = TransactionFactory::createDepositTransaction(100000, primaryAccount, DepositType::CASH, primaryAccount->getCardNumber());
+        depositTransactionPrimary->execute();
+        int fee1 = dynamic_cast<DepositTransaction*>(depositTransactionPrimary.get())->getFee();
 
-    if (fee4 == 2000) {
-        std::cout << "Test Passed: Withdrawal fee for non-primary bank is correctly applied (KRW 2,000).\n";
+        std::cin.rdbuf(cin_backup); // std::cin 버퍼 복원
+
+        if (fee1 == 1000) {
+            std::cout << "Test Passed: Deposit fee for primary bank is correctly applied (KRW 1,000).\n";
+        } else {
+            std::cout << "Test Failed: Deposit fee for primary bank is incorrect.\n";
+        }
+
+        depositTransactionPrimary->rollback();
+    } catch (const std::exception& e) {
+        std::cout << "Exception during deposit transaction: " << e.what() << "\n";
     }
-    else {
-        std::cout << "Test Failed: Withdrawal fee for non-primary bank is incorrect.\n";
+
+    // WithdrawalTransaction 테스트
+    try {
+        auto withdrawalTransactionOther = TransactionFactory::createWithdrawalTransaction(100000, otherAccount, otherAccount->getCardNumber());
+        withdrawalTransactionOther->execute();
+        int fee4 = dynamic_cast<WithdrawalTransaction*>(withdrawalTransactionOther.get())->getFee();
+
+        if (fee4 == 2000) {
+            std::cout << "Test Passed: Withdrawal fee for non-primary bank is correctly applied (KRW 2,000).\n";
+        } else {
+            std::cout << "Test Failed: Withdrawal fee for non-primary bank is incorrect.\n";
+        }
+
+        withdrawalTransactionOther->rollback();
+    } catch (const std::exception& e) {
+        std::cout << "Exception during withdrawal transaction: " << e.what() << "\n";
     }
 
-    depositTransactionPrimary->rollback();
-    withdrawalTransactionOther->rollback();
+    // 메모리 해제
+    delete atm;
 }
-
 
 // REQ1.9: 관리자는 관리자 카드를 통해 "거래 내역" 메뉴에 접근할 수 있습니다.
 void SystemSetupTest::test_9() {

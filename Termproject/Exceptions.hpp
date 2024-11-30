@@ -6,6 +6,7 @@
 //
 
 // Exceptions.hpp
+// Exceptions.hpp
 #pragma once
 
 #include <exception>
@@ -20,24 +21,45 @@ public:
     const char* what() const noexcept override { return message.c_str(); }
 };
 
+// New exception classes for serial number validation
+class InvalidSerialNumberException : public ATMException {
+public:
+    explicit InvalidSerialNumberException(const std::string& msg) : ATMException(msg) {}
+};
+
+class DuplicateSerialNumberException : public ATMException {
+public:
+    explicit DuplicateSerialNumberException(const std::string& msg) : ATMException(msg) {}
+};
+
+// Existing exception classes
 class InvalidCardException : public ATMException {
 public:
-    InvalidCardException(const std::string& msg) : ATMException(msg) {}
+    explicit InvalidCardException(const std::string& msg) : ATMException(msg) {}
 };
 
 class WrongPasswordException : public ATMException {
 public:
-    WrongPasswordException(const std::string& msg) : ATMException(msg) {}
+    explicit WrongPasswordException(const std::string& msg) : ATMException(msg) {}
 };
 
 class InsufficientFundsException : public ATMException {
 public:
-    InsufficientFundsException() : ATMException("Insufficient funds.") {}
+    explicit InsufficientFundsException(const std::string& msg = "Insufficient funds.") : ATMException(msg) {}
 };
 
 class CashLimitExceededException : public ATMException {
 public:
-    CashLimitExceededException() : ATMException("ATM has insufficient cash.") {}
+    explicit CashLimitExceededException(const std::string& msg = "ATM has insufficient cash.") : ATMException(msg) {}
 };
 
-// Add other exception classes as needed
+class InvalidDenominationException : public ATMException {
+public:
+    explicit InvalidDenominationException(const std::string& msg) : ATMException(msg) {}
+};
+
+// Invalid Amount Exception
+class InvalidAmountException : public ATMException {
+public:
+    explicit InvalidAmountException(const std::string& msg) : ATMException(msg) {}
+};

@@ -9,7 +9,7 @@
 #include <string>
 #include <memory>
 #include <vector>
-
+#include <set>
 // Include necessary headers
 #include "Utility.hpp"
 #include "Bank.hpp"
@@ -23,7 +23,9 @@
 class ATM {
 private:
     // ATM unique information
+    static std::set<std::string> assignedSerialNumbers;
     std::string serialNumber;
+     
     ATMType atmType;
     std::shared_ptr<Bank> primaryBank;
     bool isBilingual;

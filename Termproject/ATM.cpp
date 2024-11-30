@@ -9,16 +9,28 @@
 #include <iostream>
 #include <variant>
 #include <fstream>
-//김현수
+
+// Definition of the static member variable
+std::set<std::string> ATM::assignedSerialNumbers;
 
 // Constructor
 ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank> primaryBank, bool isBilingual)
-    : serialNumber(serialNumber), atmType(atmType), primaryBank(primaryBank),
+    : atmType(atmType), primaryBank(primaryBank),
       languageSupport(LanguageSupport::getInstance()),
       cashManager(CashManager::getInstance()),
       securityManager(SecurityManager::getInstance()),
       wrongPasswordAttempts(0),
       isAdminSession(false) {
+
+    // Validate serial number (REQ 1.1)
+    if (serialNumber.length() != 6 || !std::all_of(serialNumber.begin(), serialNumber.end(), ::isdigit)) {
+        throw InvalidSerialNumberException(languageSupport->getMessage("invalid_serial"));
+    }
+    if (assignedSerialNumbers.find(serialNumber) != assignedSerialNumbers.end()) {
+        throw DuplicateSerialNumberException(languageSupport->getMessage("duplicate_serial"));
+    }
+    this->serialNumber = serialNumber;
+    assignedSerialNumbers.insert(serialNumber);
 
     // Set ATM and Bank in system status
     SystemStatus::getInstance()->setATM(this);
@@ -45,7 +57,6 @@ ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank>
         }
     }
 }
-
 // Start Session
 void ATM::startSession() {
     wrongPasswordAttempts = 0;
@@ -124,7 +135,7 @@ void ATM::startSession() {
     }
 }
 
-// Add session transaction
+// Add session transactionff
 void ATM::addSessionTransaction(const std::shared_ptr<ITransaction>& transaction) {
     sessionTransactions.push_back(transaction);
 }
@@ -256,20 +267,104 @@ void ATM::handleDeposit() {
     }
 
     DepositType depositType = (depositTypeInput == 1) ? DepositType::CASH : DepositType::CHECK;
-auto depositTransaction = TransactionFactory::createDepositTransaction(0, currentAccount, depositType, currentCardNumber);
+    int totalAmount = 0;
 
-    // Execute transaction
-    if (depositTransaction->execute()) {
-        // Add transaction record
-        currentAccount->addTransaction(depositTransaction);
-        addSessionTransaction(depositTransaction);
-        std::cout << "Deposit successful." << std::endl;
-    } else {
-        std::cout << "Deposit failed." << std::endl;
+    if (depositType == DepositType::CASH) {
+        // Accept cash denominations (REQ 10)
+        std::map<Denomination, int> depositCash;
+        int totalBills = 0;
+
+        std::cout << languageSupport->getMessage("denomination_prompt") << std::endl;
+        for (const auto& denomPair : DENOMINATION_VALUES) {
+            Denomination denom = denomPair.first;
+            int denomValue = denomPair.second;
+            int count = 0;
+            while (true) {
+                auto countVariant = InputHandler::getInput("Number of KRW " + std::to_string(denomValue) + " bills: ", InputType::INT);
+                try {
+                    count = std::get<int>(countVariant);
+                    if (count < 0) {
+                        std::cout << "Count cannot be negative. Please try again." << std::endl;
+                        continue;
+                    }
+                    break;
+                } catch (const std::bad_variant_access&) {
+                    std::cout << languageSupport->getMessage("invalid_input") << std::endl;
+                }
+            }
+            depositCash[denom] = count;
+            totalAmount += denomValue * count;
+            totalBills += count;
+        }
+
+        if (totalAmount == 0) {
+            std::cout << languageSupport->getMessage("no_cash_entered") << std::endl;
+            return;
+        }
+
+        if (totalBills > MAX_CASH_DEPOSIT) {
+            std::cout << "Maximum number of bills exceeded. Deposit cancelled." << std::endl;
+            return;
+        }
+
+        // Create and execute deposit transaction
+        auto depositTransaction = TransactionFactory::createDepositTransaction(totalAmount, currentAccount, depositType, currentCardNumber);
+
+        if (depositTransaction->execute()) {
+            // Update cash inventory
+            try {
+                cashManager->acceptCash(depositCash);
+            } catch (const ATMException& e) {
+                std::cout << e.what() << std::endl;
+                depositTransaction->rollback();
+                return;
+            }
+
+            // Add transaction record
+            currentAccount->addTransaction(depositTransaction);
+            addSessionTransaction(depositTransaction);
+            std::cout << languageSupport->getMessage("deposit_successful") << totalAmount << std::endl;
+        } else {
+            std::cout << languageSupport->getMessage("deposit_failed") << std::endl;
+        }
+
+    } else if (depositType == DepositType::CHECK) {
+        // Handle check deposit
+        int checkAmount = 0;
+        while (true) {
+            auto amountVariant = InputHandler::getInput(languageSupport->getMessage("check_deposit_prompt") + "\n", InputType::INT);
+            try {
+                checkAmount = std::get<int>(amountVariant);
+                if (checkAmount <= 0) {
+                    std::cout << "Amount must be positive. Please try again." << std::endl;
+                    continue;
+                }
+                break;
+            } catch (const std::bad_variant_access&) {
+                std::cout << languageSupport->getMessage("invalid_input") << std::endl;
+            }
+        }
+
+        if (checkAmount > MAX_CHECK_DEPOSIT) {
+            std::cout << "Maximum check deposit amount exceeded. Deposit cancelled." << std::endl;
+            return;
+        }
+
+        // Create and execute deposit transaction
+        auto depositTransaction = TransactionFactory::createDepositTransaction(checkAmount, currentAccount, depositType, currentCardNumber);
+
+        if (depositTransaction->execute()) {
+            // Add transaction record
+            currentAccount->addTransaction(depositTransaction);
+            addSessionTransaction(depositTransaction);
+            std::cout << languageSupport->getMessage("check_deposit_successful") << checkAmount << std::endl;
+        } else {
+            std::cout << languageSupport->getMessage("check_deposit_failed") << std::endl;
+        }
     }
 }
 
-// Handle withdrawal
+// Modify handleWithdrawal to ensure amounts are multiples of KRW 1,000
 void ATM::handleWithdrawal() {
     // Limit of 3 withdrawals per session
     int withdrawalCount = 0;
@@ -287,7 +382,7 @@ void ATM::handleWithdrawal() {
     // Enter withdrawal amount
     int amount = 0;
     while (true) {
-        auto amountVariant = InputHandler::getInput("Enter amount to withdraw:\n", InputType::INT);
+        auto amountVariant = InputHandler::getInput(languageSupport->getMessage("withdrawal_amount_prompt") + "\n", InputType::INT);
         try {
             amount = std::get<int>(amountVariant);
         } catch (const std::bad_variant_access&) {
@@ -299,6 +394,12 @@ void ATM::handleWithdrawal() {
             std::cout << "Amount must be positive and less than or equal to KRW 500,000. Please try again." << std::endl;
             continue;
         }
+
+        if (amount % 1000 != 0) {
+            std::cout << languageSupport->getMessage("amount_must_be_multiple") << std::endl;
+            continue;
+        }
+
         break;
     }
 
@@ -311,7 +412,7 @@ void ATM::handleWithdrawal() {
             // Dispense cash
             std::map<Denomination, int> dispensedCash;
             if (cashManager->dispenseCash(amount, dispensedCash)) {
-                std::cout << "Withdrawal successful." << std::endl;
+                std::cout << languageSupport->getMessage("withdrawal_successful") << std::endl;
 
                 // Add transaction record
                 currentAccount->addTransaction(withdrawalTransaction);
@@ -322,15 +423,16 @@ void ATM::handleWithdrawal() {
                     std::cout << "KRW " << DENOMINATION_VALUES.at(pair.first) << " x " << pair.second << std::endl;
                 }
             } else {
-                // Insufficient cash in ATM
+                // Cannot dispense the exact amount with available denominations
                 withdrawalTransaction->rollback();
-                std::cout << "ATM has insufficient cash. Transaction rolled back." << std::endl;
+                std::cout << languageSupport->getMessage("atm_insufficient_cash") << std::endl;
             }
         }
     } catch (const ATMException& e) {
         std::cout << e.what() << std::endl;
     }
 }
+
 
 // Handle transfer
 void ATM::handleTransfer() {

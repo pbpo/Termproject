@@ -48,29 +48,29 @@ void initializeSystem() {
         std::string bankName, ownerName, accountNumber, password;
         int initialBalance;
 
-        // ÀÔ·Â ¹Þ±â: ÀºÇà ÀÌ¸§
+        // ï¿½Ô·ï¿½ ï¿½Þ±ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½
         bankName = std::get<std::string>(InputHandler::getInput("Enter bank name for account " + std::to_string(i + 1) + ": ", InputType::STRING));
 
-        // ÀÔ·Â ¹Þ±â: ¼ÒÀ¯ÀÚ ÀÌ¸§
+        // ï¿½Ô·ï¿½ ï¿½Þ±ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ì¸ï¿½
         ownerName = std::get<std::string>(InputHandler::getInput("Enter owner name for account " + std::to_string(i + 1) + ": ", InputType::STRING));
 
-        // ÀÔ·Â ¹Þ±â: 12ÀÚ¸® °èÁÂ ¹øÈ£ °ËÁõ
+        // ï¿½Ô·ï¿½ ï¿½Þ±ï¿½: 12ï¿½Ú¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½
         while (true) {
             accountNumber = std::get<std::string>(InputHandler::getInput("Enter 12-digit account number for account " + std::to_string(i + 1) + ": ", InputType::STRING));
             if (isValidAccountNumber(accountNumber)) {
                 break;
             }
-            // À¯È¿ÇÏÁö ¾ÊÀº °æ¿ì, ·çÇÁ°¡ °è¼ÓµÇ¾î ´Ù½Ã ÀÔ·ÂÀ» ¿äÃ»ÇÔ
+            // ï¿½ï¿½È¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ÓµÇ¾ï¿½ ï¿½Ù½ï¿½ ï¿½Ô·ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½
         }
 
-        // ÀÔ·Â ¹Þ±â: ºñ¹Ð¹øÈ£ ¼³Á¤
+        // ï¿½Ô·ï¿½ ï¿½Þ±ï¿½: ï¿½ï¿½Ð¹ï¿½È£ ï¿½ï¿½ï¿½ï¿½
         while (true) {
             password = std::get<std::string>(InputHandler::getInput("Set a password for account " + std::to_string(i + 1) + ": ", InputType::STRING));
             if (password.empty()) {
                 std::cout << "Password cannot be empty. Please try again." << std::endl;
                 continue;
             }
-            // ºñ¹Ð¹øÈ£ È®ÀÎ
+            // ï¿½ï¿½Ð¹ï¿½È£ È®ï¿½ï¿½
             std::string confirmPassword = std::get<std::string>(InputHandler::getInput("Confirm password for account " + std::to_string(i + 1) + ": ", InputType::STRING));
             if (password != confirmPassword) {
                 std::cout << "Passwords do not match. Please try again." << std::endl;
@@ -79,7 +79,7 @@ void initializeSystem() {
             break;
         }
 
-        // ÀÔ·Â ¹Þ±â: ÃÊ±â ÀÜ¾×
+        // ï¿½Ô·ï¿½ ï¿½Þ±ï¿½: ï¿½Ê±ï¿½ ï¿½Ü¾ï¿½
         while (true) {
             auto balanceVariant = InputHandler::getInput("Enter initial balance for account " + std::to_string(i + 1) + ": ", InputType::INT);
             try {
@@ -95,12 +95,12 @@ void initializeSystem() {
             }
         }
 
-        // °èÁÂ »ý¼º ¹× Ãß°¡
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ß°ï¿½
         auto account = std::make_shared<Account>(bankName, ownerName, accountNumber, initialBalance);
         primaryBank->addAccount(account);
 
-        // »ç¿ëÀÚ ÀÎÁõ Á¤º¸ Ãß°¡
-        SecurityManager::getInstance()->addUser(accountNumber, password, bankName); // »ç¿ëÀÚ°¡ ¼³Á¤ÇÑ ºñ¹Ð¹øÈ£ »ç¿ë
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
+        SecurityManager::getInstance()->addUser(accountNumber, password, bankName); // ï¿½ï¿½ï¿½ï¿½Ú°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ð¹ï¿½È£ ï¿½ï¿½ï¿½
     }
 
     // Bank deposits cash into the ATM
@@ -129,7 +129,7 @@ void initializeSystem() {
     int atmTypeInput;
     bool isBilingual;
 
-    // ATM ½Ã¸®¾ó ¹øÈ£ ÀÔ·Â (¹®ÀÚ¿­·Î º¯°æ)
+    // ATM ï¿½Ã¸ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½Ô·ï¿½ (ï¿½ï¿½ï¿½Ú¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     while (true) {
         auto serialVariant = InputHandler::getInput("Enter ATM serial number (6-digit): ", InputType::STRING);
         try {
@@ -156,7 +156,7 @@ void initializeSystem() {
         }
     }
 
-    // ATM Å¸ÀÔ ÀÔ·Â
+    // ATM Å¸ï¿½ï¿½ ï¿½Ô·ï¿½
     while (true) {
         auto atmTypeVariant = InputHandler::getInput("Select ATM type: 1. Single Bank ATM 2. Multi-Bank ATM: ", InputType::INT);
         try {
@@ -173,7 +173,7 @@ void initializeSystem() {
     }
     ATMType atmType = (atmTypeInput == 1) ? ATMType::SINGLE : ATMType::MULTI;
 
-    // ATM ¾ð¾î ¼³Á¤
+    // ATM ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     while (true) {
         auto bilingualVariant = InputHandler::getInput("Is the ATM bilingual? (1. Yes 2. No): ", InputType::INT);
         try {
@@ -199,4 +199,4 @@ void initializeSystem() {
 
     // Start the program
     atm.startSession();
-}
+};

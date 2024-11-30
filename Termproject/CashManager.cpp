@@ -36,30 +36,62 @@ bool CashManager::dispenseCash(int amount, std::map<Denomination, int>& dispense
             if (dispensedCount > 0) {
                 dispensedCash[denom] = dispensedCount;
                 remainingAmount -= dispensedCount * denomValue;
-                cashInventory[denom] -= dispensedCount;
+                // Do not update cashInventory here; update after confirming the transaction
             }
         }
     }
 
     if (remainingAmount == 0) {
+        // Update the cash inventory after successfully calculating the dispensed cash
+        for (const auto& pair : dispensedCash) {
+            cashInventory[pair.first] -= pair.second;
+        }
         return true;
     } else {
-        // Rollback
-        for (const auto& pair : dispensedCash) {
-            cashInventory[pair.first] += pair.second;
-        }
+        // Cannot dispense the exact amount with available denominations
         dispensedCash.clear();
-        throw CashLimitExceededException();
+        return false;
     }
 }
 
 void CashManager::acceptCash(const std::map<Denomination, int>& cashDetails) {
+    int totalBills = 0;
     for (const auto& pair : cashDetails) {
-        cashInventory[pair.first] += pair.second;
+        Denomination denom = pair.first;
+        int count = pair.second;
+
+        if (DENOMINATION_VALUES.find(denom) == DENOMINATION_VALUES.end()) {
+            throw InvalidDenominationException("Invalid denomination entered.");
+        }
+
+        if (count < 0) {
+            throw InvalidAmountException("Count cannot be negative.");
+        }
+
+        totalBills += count;
+
+        // Update cash inventory
+        cashInventory[denom] += count;
+    }
+
+    if (totalBills > MAX_CASH_DEPOSIT) {
+        // Rollback the added cash
+        for (const auto& pair : cashDetails) {
+            cashInventory[pair.first] -= pair.second;
+        }
+        throw CashLimitExceededException("Maximum cash deposit limit exceeded.");
     }
 }
 
 void CashManager::addCash(Denomination denom, int count) {
+    if (DENOMINATION_VALUES.find(denom) == DENOMINATION_VALUES.end()) {
+        throw InvalidDenominationException("Invalid denomination entered.");
+    }
+
+    if (count < 0) {
+        throw InvalidAmountException("Count cannot be negative.");
+    }
+
     cashInventory[denom] += count;
 }
 
@@ -81,8 +113,21 @@ void CashManager::printCashInventory() const {
 
 void CashManager::withdrawCash(const std::map<Denomination, int>& cashDetails) {
     for (const auto& pair : cashDetails) {
-        if (cashInventory.find(pair.first) != cashInventory.end()) {
-            cashInventory[pair.first] -= pair.second;
+        Denomination denom = pair.first;
+        int count = pair.second;
+
+        if (DENOMINATION_VALUES.find(denom) == DENOMINATION_VALUES.end()) {
+            throw InvalidDenominationException("Invalid denomination entered.");
         }
+
+        if (count < 0) {
+            throw InvalidAmountException("Count cannot be negative.");
+        }
+
+        if (cashInventory[denom] < count) {
+            throw InsufficientFundsException("Insufficient cash in ATM.");
+        }
+
+        cashInventory[denom] -= count;
     }
 }
