@@ -8,11 +8,13 @@
 
 // LanguageSupport.cpp
 #include "LanguageSupport.hpp"
+#include <iostream>
 
 LanguageSupport* LanguageSupport::instance = nullptr;
 
 LanguageSupport::LanguageSupport() {
     currentLanguage = Language::ENGLISH;
+    std::cout << "LanguageSupport instance created." << std::endl;
 
     // Initialize English messages
     messages["invalid_serial"]["English"] = "Serial number must be a unique 6-digit number.";
@@ -388,6 +390,11 @@ messages["bill_count_prompt"]["English"] = " bills of KRW ";
     messages["rollback_initiated"]["English"] = "Rollback initiated.";
     messages["rollback_initiated"]["Korean"] = "롤백이 시작되었습니다.";
     
+    messages["remaining_fee"]["English"] = "Remaining fee: KRW ";
+    messages["remaining_fee"]["Korean"] = "남은 수수료: KRW ";
+
+    messages["insert_additional_fee_cash_instruction"]["English"] = "Insert additional fee cash:";
+    messages["insert_additional_fee_cash_instruction"]["Korean"] = "추가 수수료 현금을 삽입하세요:";
 
 }
 

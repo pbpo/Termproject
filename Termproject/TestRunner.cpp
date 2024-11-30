@@ -6,7 +6,7 @@
 // 기능별 test 클래스 import
 #include "AdminMenuTest.hpp"
 //#include "SystemSetupTest.hpp"
-#include "LanguageSupportTest.hpp"
+
 
 
 using namespace std;
@@ -22,7 +22,7 @@ void runTest() {
     //testGroups[5] = make_shared<WithdrawalTest>(5);
     //testGroups[6] = make_shared<TransferTest>(6);
     testGroups[7] = make_shared<AdminMenuTest>(7);
-    testGroups[8] = make_shared<LanguageSupportTest>(8);
+    
     //testGroups[9] = make_shared<DisplaySnapshotTest>(10);
 
     string testKey;

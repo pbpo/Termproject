@@ -28,9 +28,9 @@ const std::map<std::string, std::shared_ptr<Account>>& Bank::getAllAccounts() co
 
 void Bank::printAllAccounts() const {
     for (const auto& pair : accounts) {
-        std::cout << languageSupport->getMessage("Account [Bank: ") << bankName << ", No: " << pair.second->getAccountNumber()
-                  << languageSupport->getMessage(", Owner: ") << pair.second->getOwnerName()
-                  << languageSupport->getMessage("] balance: ") << pair.second->getBalance() << std::endl;
+        std::cout << "Account [Bank: " << bankName << ", No: " << pair.second->getAccountNumber()
+                  << ", Owner: " << pair.second->getOwnerName()
+                  << "] balance: " << pair.second->getBalance() << std::endl;
     }
 }
 
