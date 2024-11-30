@@ -19,7 +19,7 @@
 #include "ITransaction.hpp"
 #include "InputHandler.hpp"
 #include "Account.hpp"
-
+#include "TransactionLogger.hpp"
 class ATM {
 private:
     // ATM unique information
@@ -41,7 +41,7 @@ private:
     std::vector<std::shared_ptr<ITransaction>> sessionTransactions;
     int wrongPasswordAttempts;
     bool isAdminSession;
-
+std::unique_ptr<TransactionLogger> transactionLogger;
     std::vector<std::string> transactionHistory; // 거래 내역 저장
 
     // Internal methods
@@ -68,4 +68,5 @@ ATM(const std::string& serialNumber, ATMType atmType, bool isBilingual);
  bool getIsBilingual() const { return isBilingual; }
     // Transaction record management
     void addSessionTransaction(const std::shared_ptr<ITransaction>& transaction);
+    
 };
