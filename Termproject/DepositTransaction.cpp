@@ -53,22 +53,48 @@ bool DepositTransaction::execute() {
             totalInserted += denomPair.second * count;
             totalBills += count;
         }
-         this->amount += totalInserted;
 
+        // 입금 금액을 amount에 반영
+        this->amount += totalInserted;
 
-        // 수수료를 계좌에서 차감 시도
-        if (account->getBalance() >= fee) {
-            account->withdraw(fee);
-            feeDeductedFromAccount = true;
-            std::cout << languageSupport->getMessage("fee_deducted_from_account") << fee << languageSupport->getMessage("currency_unit") << std::endl;
-        } else {
-            // 입금한 금액에서 수수료 차감
-            if (amount >= fee) {
-                amount -= fee;
-                std::cout << languageSupport->getMessage("fee_deducted_from_deposit") << fee << languageSupport->getMessage("currency_unit") << std::endl;
+        // 수수료 처리 루프
+        while (true) {
+            // 수수료를 계좌에서 차감 시도
+            if (account->getBalance() >= fee) {
+                account->withdraw(fee);
+                feeDeductedFromAccount = true;
+                std::cout << languageSupport->getMessage("fee_deducted_from_account") << fee << languageSupport->getMessage("currency_unit") << std::endl;
+                break;
             } else {
-                std::cout << languageSupport->getMessage("insufficient_funds_for_fee") << std::endl;
-                return false;
+                // 입금한 금액에서 수수료 차감
+                if (amount >= fee) {
+                    amount -= fee;
+                    std::cout << languageSupport->getMessage("fee_deducted_from_deposit") << fee << languageSupport->getMessage("currency_unit") << std::endl;
+                    break;
+                } else {
+                    std::cout << languageSupport->getMessage("insufficient_funds_for_fee") << std::endl;
+                    
+                    // 추가 입금 요청
+                    std::cout << languageSupport->getMessage("prompt_additional_deposit") << std::endl;
+                    int additionalAmount = 0;
+                    while (true) {
+                        auto additionalInput = InputHandler::getInput(languageSupport->getMessage("enter_additional_amount"), InputType::INT);
+                        try {
+                            additionalAmount = std::get<int>(additionalInput);
+                            if (additionalAmount <= 0) {
+                                std::cout << languageSupport->getMessage("invalid_additional_amount") << std::endl;
+                                continue;
+                            }
+                            break;
+                        } catch (const std::bad_variant_access&) {
+                            std::cout << languageSupport->getMessage("invalid_input") << std::endl;
+                        }
+                    }
+
+                    // 추가 금액을 amount에 반영
+                    amount += additionalAmount;
+                    std::cout << languageSupport->getMessage("additional_deposit_added") << additionalAmount << languageSupport->getMessage("currency_unit") << std::endl;
+                }
             }
         }
 
@@ -78,26 +104,82 @@ bool DepositTransaction::execute() {
 
     } else if (depositType == DepositType::CHECK) {
         // 수표 입금 처리
-        
 
         // 수표 금액이 생성자에서 받은 amount와 일치하는지 확인
+        // (이 부분은 실제 수표 검증 로직에 따라 구현해야 합니다.)
 
+        // 수수료를 별도로 현금으로 지불받기
+        std::cout << languageSupport->getMessage("check_fee_payment_instruction") << fee << languageSupport->getMessage("currency_unit") << std::endl;
+        
+        // 현금으로 수수료 지불받기
+        std::map<Denomination, int> feeCash;
+        int totalFeeInserted = 0;
 
-        // 수수료를 계좌에서 차감 시도
-        if (account->getBalance() >= fee) {
-            account->withdraw(fee);
-            feeDeductedFromAccount = true;
-            std::cout << languageSupport->getMessage("fee_deducted_from_account") << fee << languageSupport->getMessage("currency_unit") << std::endl;
-        } else {
-            // 수표 금액에서 수수료 차감
-            if (amount >= fee) {
-                amount -= fee;
-                std::cout << languageSupport->getMessage("fee_deducted_from_deposit") << fee << languageSupport->getMessage("currency_unit") << std::endl;
-            } else {
-                std::cout << languageSupport->getMessage("insufficient_funds_for_fee") << std::endl;
-                return false;
+        std::cout << languageSupport->getMessage("insert_fee_cash_instruction") << std::endl;
+        for (const auto& denomPair : DENOMINATION_VALUES) {
+            int count = 0;
+            while (true) {
+                std::string prompt = "KRW " + std::to_string(denomPair.second) + languageSupport->getMessage("bill_count_prompt");
+                auto countVariant = InputHandler::getInput(prompt, InputType::INT);
+                try {
+                    count = std::get<int>(countVariant);
+                    if (count < 0) {
+                        std::cout << languageSupport->getMessage("negative_bill_count") << std::endl;
+                        continue;
+                    }
+                    break;
+                } catch (const std::bad_variant_access&) {
+                    std::cout << languageSupport->getMessage("invalid_input") << std::endl;
+                }
+            }
+            feeCash[denomPair.first] = count;
+            totalFeeInserted += denomPair.second * count;
+        }
+
+        // 수수료 금액 검증
+        if (totalFeeInserted < fee) {
+            std::cout << languageSupport->getMessage("insufficient_fee_cash") << std::endl;
+            // 추가 수수료 현금 입력 요청
+            while (totalFeeInserted < fee) {
+                int remainingFee = fee - totalFeeInserted;
+                std::cout << languageSupport->getMessage("remaining_fee") << remainingFee << languageSupport->getMessage("currency_unit") << std::endl;
+                std::cout << languageSupport->getMessage("insert_additional_fee_cash_instruction") << std::endl;
+                for (const auto& denomPair : DENOMINATION_VALUES) {
+                    int count = 0;
+                    while (true) {
+                        std::string prompt = "KRW " + std::to_string(denomPair.second) + languageSupport->getMessage("bill_count_prompt");
+                        auto countVariant = InputHandler::getInput(prompt, InputType::INT);
+                        try {
+                            count = std::get<int>(countVariant);
+                            if (count < 0) {
+                                std::cout << languageSupport->getMessage("negative_bill_count") << std::endl;
+                                continue;
+                            }
+                            break;
+                        } catch (const std::bad_variant_access&) {
+                            std::cout << languageSupport->getMessage("invalid_input") << std::endl;
+                        }
+                    }
+                    feeCash[denomPair.first] += count;
+                    totalFeeInserted += denomPair.second * count;
+                    if (totalFeeInserted >= fee) break;
+                }
             }
         }
+
+        // 정확한 수수료 금액만 차감
+        int excess = totalFeeInserted - fee;
+        if (excess > 0) {
+            // 환불 처리 (여기서는 간단히 출력)
+            std::cout << languageSupport->getMessage("fee_cash_overpaid") << excess << languageSupport->getMessage("currency_unit") << " 반환됩니다." << std::endl;
+            // 실제로는 환불 로직을 구현해야 합니다.
+        }
+
+        // 수수료 현금 수락
+        CashManager::getInstance()->acceptCash(feeCash);
+        std::cout << languageSupport->getMessage("fee_cash_accepted") << std::endl;
+
+        // 수수료는 별도로 현금으로 지불받았으므로, 계좌나 입금 금액에서 수수료를 차감할 필요가 없습니다.
     }
 
     // 계좌에 금액 입금
@@ -122,6 +204,9 @@ void DepositTransaction::rollback() {
             account->deposit(fee);
             std::cout << languageSupport->getMessage("fee_refunded") << fee << languageSupport->getMessage("currency_unit") << std::endl;
         }
+
+        // 수표 입금 시 별도로 현금으로 지불한 수수료는 환불 로직을 추가해야 할 수 있습니다.
+        // 예: CashManager를 통해 환불 처리
     } catch (const std::exception& e) {
         std::cout << languageSupport->getMessage("rollback_error") << e.what() << std::endl;
     }
