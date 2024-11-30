@@ -123,10 +123,6 @@ void ATM::startSession() {
                 isValidCard = securityManager->validateCard(cardNumber);
             }
 
-            if (!isValidCard) {
-                throw InvalidCardException(languageSupport->getMessage("card_invalid"));
-            }
-
             // Admin card check
             if (cardNumber == "000000") {
                 isAdminSession = true;
@@ -134,6 +130,12 @@ void ATM::startSession() {
                 endSession();
                 continue;
             }
+
+            if (!isValidCard) {
+                throw InvalidCardException(languageSupport->getMessage("card_invalid"));
+            }
+
+            
 
             // User authentication
             
