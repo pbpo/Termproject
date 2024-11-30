@@ -12,19 +12,20 @@
 #include "SecurityManager.hpp"
 #include "BankManager.hpp"
 #include "TransactionLogger.hpp"
+#include <filesystem>
 
 std::set<std::string> ATM::assignedSerialNumbers;
 
 // Constructor for Single-Bank ATM
 ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank> primaryBank, bool isBilingual)
     : atmType(atmType),
-      primaryBank(primaryBank),
-      languageSupport(LanguageSupport::getInstance()),
-      cashManager(CashManager::getInstance()),
-      securityManager(SecurityManager::getInstance()),
-      wrongPasswordAttempts(0),
-      isAdminSession(false),
-      transactionLogger(nullptr) {
+    primaryBank(primaryBank),
+    languageSupport(LanguageSupport::getInstance()),
+    cashManager(CashManager::getInstance()),
+    securityManager(SecurityManager::getInstance()),
+    wrongPasswordAttempts(0),
+    isAdminSession(false),
+    transactionLogger(nullptr) {
 
     // Serial number validation
     if (serialNumber.length() != 6 || !std::all_of(serialNumber.begin(), serialNumber.end(), ::isdigit)) {
@@ -47,48 +48,52 @@ ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank>
         auto choiceVariant = InputHandler::getInput(languageSupport->getMessage("select_language") + "\n", InputType::INT);
         try {
             choice = std::get<int>(choiceVariant);
-        } catch (const std::bad_variant_access&) {
+        }
+        catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
             choice = 1;
         }
 
         if (choice == 1) {
             languageSupport->setLanguage(Language::ENGLISH);
-        } else if (choice == 2) {
+        }
+        else if (choice == 2) {
             languageSupport->setLanguage(Language::KOREAN);
-        } else {
+        }
+        else {
             languageSupport->setLanguage(Language::ENGLISH);
         }
     }
 
     // Initialize TransactionLogger
-try {
-    std::string logPath = "transaction_log.txt"; 
-    
-    std::filesystem::path pathObj(logPath);
-    if (!pathObj.parent_path().empty() && !std::filesystem::exists(pathObj.parent_path())) {
-        std::filesystem::create_directories(pathObj.parent_path());
-        std::cout << "Created directories: " << pathObj.parent_path() << std::endl;
-    }
+    try {
+        std::string logPath = "transaction_log.txt";
 
-    std::cout << "Initializing TransactionLogger with path: " << logPath << std::endl;
-    transactionLogger = std::make_unique<TransactionLogger>(logPath);
-} catch (const std::exception& e) {
-    std::cerr << "TransactionLogger 초기화 실패: " << e.what() << std::endl;
-}
+        std::filesystem::path pathObj(logPath);
+        if (!pathObj.parent_path().empty() && !std::filesystem::exists(pathObj.parent_path())) {
+            std::filesystem::create_directories(pathObj.parent_path());
+            std::cout << "Created directories: " << pathObj.parent_path() << std::endl;
+        }
+
+        std::cout << "Initializing TransactionLogger with path: " << logPath << std::endl;
+        transactionLogger = std::make_unique<TransactionLogger>(logPath);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "TransactionLogger 초기화 실패: " << e.what() << std::endl;
+    }
 
 }
 
 // Constructor for Multi-Bank ATM
 ATM::ATM(const std::string& serialNumber, ATMType atmType, bool isBilingual)
     : atmType(atmType),
-      primaryBank(nullptr),
-      languageSupport(LanguageSupport::getInstance()),
-      cashManager(CashManager::getInstance()),
-      securityManager(SecurityManager::getInstance()),
-      wrongPasswordAttempts(0),
-      isAdminSession(false),
-      transactionLogger(nullptr) {
+    primaryBank(nullptr),
+    languageSupport(LanguageSupport::getInstance()),
+    cashManager(CashManager::getInstance()),
+    securityManager(SecurityManager::getInstance()),
+    wrongPasswordAttempts(0),
+    isAdminSession(false),
+    transactionLogger(nullptr) {
 
     // Serial number validation
     if (serialNumber.length() != 6 || !std::all_of(serialNumber.begin(), serialNumber.end(), ::isdigit)) {
@@ -111,35 +116,39 @@ ATM::ATM(const std::string& serialNumber, ATMType atmType, bool isBilingual)
         auto choiceVariant = InputHandler::getInput("", InputType::INT);
         try {
             choice = std::get<int>(choiceVariant);
-        } catch (const std::bad_variant_access&) {
+        }
+        catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input_default_language") << std::endl;
             choice = 1;
         }
 
         if (choice == 1) {
             languageSupport->setLanguage(Language::ENGLISH);
-        } else if (choice == 2) {
+        }
+        else if (choice == 2) {
             languageSupport->setLanguage(Language::KOREAN);
-        } else {
+        }
+        else {
             languageSupport->setLanguage(Language::ENGLISH);
         }
     }
 
     // Initialize TransactionLogger
-try {
-    std::string logPath = "transaction_log.txt"; 
-    
-    std::filesystem::path pathObj(logPath);
-    if (!pathObj.parent_path().empty() && !std::filesystem::exists(pathObj.parent_path())) {
-        std::filesystem::create_directories(pathObj.parent_path());
-        std::cout << "Created directories: " << pathObj.parent_path() << std::endl;
-    }
+    try {
+        std::string logPath = "transaction_log.txt";
 
-    std::cout << "Initializing TransactionLogger with path: " << logPath << std::endl;
-    transactionLogger = std::make_unique<TransactionLogger>(logPath);
-} catch (const std::exception& e) {
-    std::cerr << "TransactionLogger 초기화 실패: " << e.what() << std::endl;
-}
+        std::filesystem::path pathObj(logPath);
+        if (!pathObj.parent_path().empty() && !std::filesystem::exists(pathObj.parent_path())) {
+            std::filesystem::create_directories(pathObj.parent_path());
+            std::cout << "Created directories: " << pathObj.parent_path() << std::endl;
+        }
+
+        std::cout << "Initializing TransactionLogger with path: " << logPath << std::endl;
+        transactionLogger = std::make_unique<TransactionLogger>(logPath);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "TransactionLogger 초기화 실패: " << e.what() << std::endl;
+    }
 
 }
 
@@ -153,7 +162,8 @@ void ATM::startSession() {
         std::string cardNumber;
         try {
             cardNumber = std::get<std::string>(cardNumberVariant);
-        } catch (const std::bad_variant_access&) {
+        }
+        catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
             continue;
         }
@@ -162,7 +172,8 @@ void ATM::startSession() {
             bool isValidCard = false;
             if (atmType == ATMType::SINGLE) {
                 isValidCard = securityManager->validateCard(cardNumber, primaryBank->getBankName());
-            } else {
+            }
+            else {
                 // For Multi-Bank ATM, any bank's card is valid
                 isValidCard = securityManager->validateCard(cardNumber);
             }
@@ -179,7 +190,7 @@ void ATM::startSession() {
                 throw InvalidCardException(languageSupport->getMessage("card_invalid"));
             }
 
-            
+
 
             // User authentication
             while (wrongPasswordAttempts < 3) {
@@ -187,7 +198,8 @@ void ATM::startSession() {
                 std::string password;
                 try {
                     password = std::get<std::string>(passwordVariant);
-                } catch (const std::bad_variant_access&) {
+                }
+                catch (const std::bad_variant_access&) {
                     std::cout << languageSupport->getMessage("invalid_input") << std::endl;
                     wrongPasswordAttempts++;
                     continue;
@@ -203,7 +215,8 @@ void ATM::startSession() {
                     currentCardNumber = cardNumber;
                     showMainMenu();
                     break;
-                } else {
+                }
+                else {
                     wrongPasswordAttempts++;
                     std::cout << languageSupport->getMessage("wrong_password") << std::endl;
                 }
@@ -212,7 +225,8 @@ void ATM::startSession() {
             if (wrongPasswordAttempts >= 3) {
                 throw WrongPasswordException(languageSupport->getMessage("max_password_attempts"));
             }
-        } catch (const ATMException& e) {
+        }
+        catch (const ATMException& e) {
             std::cout << e.what() << std::endl;
             endSession();
             wrongPasswordAttempts = 0;
@@ -236,24 +250,25 @@ void ATM::handleAdminMenu() {
         auto choiceVariant = InputHandler::getInput("", InputType::INT);
         try {
             choice = std::get<int>(choiceVariant);
-        } catch (const std::bad_variant_access&) {
+        }
+        catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
             continue;
         }
 
         switch (choice) {
-            case 1:
-                displayAllTransactionHistory();
-                break;
-            case 2:
-                exportTransactionHistoryToFile("transaction_history.txt");
-                std::cout << "Transaction history exported to transaction_history.txt" << std::endl;
-                break;
-            case 3:
-                return;
-            default:
-                std::cout << languageSupport->getMessage("invalid_choice") << std::endl;
-                break;
+        case 1:
+            displayAllTransactionHistory();
+            break;
+        case 2:
+            exportTransactionHistoryToFile("transaction_history.txt");
+            std::cout << "Transaction history exported to transaction_history.txt" << std::endl;
+            break;
+        case 3:
+            return;
+        default:
+            std::cout << languageSupport->getMessage("invalid_choice") << std::endl;
+            break;
         }
     }
 }
@@ -308,27 +323,28 @@ void ATM::showMainMenu() {
         auto choiceVariant = InputHandler::getInput("", InputType::INT);
         try {
             choice = std::get<int>(choiceVariant);
-        } catch (const std::bad_variant_access&) {
+        }
+        catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
             continue;
         }
 
         switch (choice) {
-            case 1:
-                handleDeposit();
-                break;
-            case 2:
-                handleWithdrawal();
-                break;
-            case 3:
-                handleTransfer();
-                break;
-            case 4:
-                endSession();
-                return;
-            default:
-                std::cout << languageSupport->getMessage("invalid_choice") << std::endl;
-                break;
+        case 1:
+            handleDeposit();
+            break;
+        case 2:
+            handleWithdrawal();
+            break;
+        case 3:
+            handleTransfer();
+            break;
+        case 4:
+            endSession();
+            return;
+        default:
+            std::cout << languageSupport->getMessage("invalid_choice") << std::endl;
+            break;
         }
     }
 }
@@ -347,7 +363,8 @@ void ATM::handleDeposit() {
                 continue;
             }
             break;
-        } catch (const std::bad_variant_access&) {
+        }
+        catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
         }
     }
@@ -357,47 +374,49 @@ void ATM::handleDeposit() {
     // 입금 금액 입력
     int amount = 0;
     while (true) {
-        
+
         try {
-            
-            if(depositType == DepositType::CHECK ){
+
+            if (depositType == DepositType::CHECK) {
                 auto amountVariant = InputHandler::getInput(languageSupport->getMessage("enter_deposit_amount"), InputType::INT);
                 amount = std::get<int>(amountVariant);
-            if (amount <= 0) {
-                std::cout << languageSupport->getMessage("invalid_amount") << std::endl;
-                continue;
-            }
-            if (  amount < 100000) {
-                
-                std::cout << languageSupport->getMessage("min_check_amount") << std::endl;
-                continue;
-            }
+                if (amount <= 0) {
+                    std::cout << languageSupport->getMessage("invalid_amount") << std::endl;
+                    continue;
+                }
+                if (amount < 100000) {
+
+                    std::cout << languageSupport->getMessage("min_check_amount") << std::endl;
+                    continue;
+                }
             }
             break;
-        } catch (const std::bad_variant_access&) {
+        }
+        catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
         }
-         auto depositTransaction = TransactionFactory::createDepositTransaction(amount, currentAccount, depositType, currentCardNumber);
+        auto depositTransaction = TransactionFactory::createDepositTransaction(amount, currentAccount, depositType, currentCardNumber);
 
-    // 트랜잭션 실행
-    if (depositTransaction->execute()) {
-        // 거래 기록 추가
-        currentAccount->addTransaction(depositTransaction);
-        addSessionTransaction(depositTransaction);
-        std::cout << languageSupport->getMessage("deposit_successful") << std::endl;
+        // 트랜잭션 실행
+        if (depositTransaction->execute()) {
+            // 거래 기록 추가
+            currentAccount->addTransaction(depositTransaction);
+            addSessionTransaction(depositTransaction);
+            std::cout << languageSupport->getMessage("deposit_successful") << std::endl;
 
-        // 로그 기록
-        if (transactionLogger) {
-            transactionLogger->logTransaction(
-                depositTransaction->getTransactionID(),
-                depositTransaction->getCardNumber(),
-                depositTransaction->getTransactionType(),
-                depositTransaction->getAmount()
-            );
+            // 로그 기록
+            if (transactionLogger) {
+                transactionLogger->logTransaction(
+                    depositTransaction->getTransactionID(),
+                    depositTransaction->getCardNumber(),
+                    depositTransaction->getTransactionType(),
+                    depositTransaction->getAmount()
+                );
+            }
         }
-    } else {
-        std::cout << languageSupport->getMessage("deposit_failed") << std::endl;
-    }
+        else {
+            std::cout << languageSupport->getMessage("deposit_failed") << std::endl;
+        }
     }
 
     // DepositTransaction 객체 생성
@@ -415,9 +434,10 @@ void ATM::handleDeposit() {
                 depositTransaction->getCardNumber(),
                 depositTransaction->getTransactionType(),
                 depositTransaction->getAmount()
-            );  
+            );
         }
-    } else {
+    }
+    else {
         std::cout << languageSupport->getMessage("deposit_failed") << std::endl;
     }
 }
@@ -444,7 +464,8 @@ void ATM::handleWithdrawal() {
         auto amountVariant = InputHandler::getInput("Enter amount to withdraw:\n", InputType::INT);
         try {
             amount = std::get<int>(amountVariant);
-        } catch (const std::bad_variant_access&) {
+        }
+        catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
             continue;
         }
@@ -485,13 +506,15 @@ void ATM::handleWithdrawal() {
                 for (const auto& pair : dispensedCash) {
                     std::cout << "KRW " << DENOMINATION_VALUES.at(pair.first) << " x " << pair.second << std::endl;
                 }
-            } else {
+            }
+            else {
                 // Insufficient cash in ATM
                 withdrawalTransaction->rollback();
                 std::cout << "ATM has insufficient cash. Transaction rolled back." << std::endl;
             }
         }
-    } catch (const ATMException& e) {
+    }
+    catch (const ATMException& e) {
         std::cout << e.what() << std::endl;
     }
 }
@@ -504,7 +527,8 @@ void ATM::handleTransfer() {
     auto transferTypeVariant = InputHandler::getInput("", InputType::INT);
     try {
         transferTypeInput = std::get<int>(transferTypeVariant);
-    } catch (const std::bad_variant_access&) {
+    }
+    catch (const std::bad_variant_access&) {
         std::cout << languageSupport->getMessage("invalid_input") << std::endl;
         return;
     }
@@ -512,9 +536,11 @@ void ATM::handleTransfer() {
     TransferType transferType;
     if (transferTypeInput == 1) {
         transferType = TransferType::CASH;
-    } else if (transferTypeInput == 2) {
+    }
+    else if (transferTypeInput == 2) {
         transferType = TransferType::ACCOUNT;
-    } else {
+    }
+    else {
         std::cout << languageSupport->getMessage("invalid_choice") << std::endl;
         return;
     }
@@ -525,7 +551,8 @@ void ATM::handleTransfer() {
         auto destAccountVariant = InputHandler::getInput("Enter destination account number:\n", InputType::STRING);
         try {
             destinationAccountNumber = std::get<std::string>(destAccountVariant);
-        } catch (const std::bad_variant_access&) {
+        }
+        catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
             continue;
         }
@@ -550,7 +577,8 @@ void ATM::handleTransfer() {
         auto amountVariant = InputHandler::getInput("Enter amount to transfer:\n", InputType::INT);
         try {
             amount = std::get<int>(amountVariant);
-        } catch (const std::bad_variant_access&) {
+        }
+        catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
             continue;
         }
@@ -582,7 +610,8 @@ void ATM::handleTransfer() {
             }
             std::cout << "Transfer successful." << std::endl;
         }
-    } catch (const ATMException& e) {
+    }
+    catch (const ATMException& e) {
         std::cout << e.what() << std::endl;
     }
 }
