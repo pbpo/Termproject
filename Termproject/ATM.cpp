@@ -398,7 +398,7 @@ void ATM::handleDeposit() {
         catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
         }
-        auto depositTransaction = TransactionFactory::createDepositTransaction(amount, currentAccount, depositType, currentCardNumber);
+        auto depositTransaction = TransactionFactory::createDepositTransaction(cashManager, amount, currentAccount, depositType, currentCardNumber);
 
         // 트랜잭션 실행
         if (depositTransaction->execute()) {
@@ -423,7 +423,7 @@ void ATM::handleDeposit() {
     }
 
     // DepositTransaction 객체 생성
-    auto depositTransaction = TransactionFactory::createDepositTransaction(amount, currentAccount, depositType, currentCardNumber);
+    auto depositTransaction = TransactionFactory::createDepositTransaction(cashManager, amount, currentAccount, depositType, currentCardNumber);
 
     // 트랜잭션 실행
     if (depositTransaction->execute()) {
@@ -481,7 +481,7 @@ void ATM::handleWithdrawal() {
     }
 
     // Create transaction
-    auto withdrawalTransaction = TransactionFactory::createWithdrawalTransaction(amount, currentAccount, currentCardNumber);
+    auto withdrawalTransaction = TransactionFactory::createWithdrawalTransaction(cashManager, amount, currentAccount, currentCardNumber);
 
     // Execute transaction
     try {
@@ -594,7 +594,7 @@ void ATM::handleTransfer() {
     }
 
     // Create transaction
-    auto transferTransaction = TransactionFactory::createTransferTransaction(amount, currentAccount, destinationAccount, transferType, currentCardNumber);
+    auto transferTransaction = TransactionFactory::createTransferTransaction(cashManager,amount, currentAccount, destinationAccount, transferType, currentCardNumber);
 
     // Execute transaction
     try {
