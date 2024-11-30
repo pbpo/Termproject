@@ -5,12 +5,12 @@
 #include <map>
 #include <memory>
 #include "Account.hpp"
-
+#include "LanguageSupport.hpp"
 class Bank {
 private:
     std::string bankName;
     std::map<std::string, std::shared_ptr<Account>> accounts;
-
+LanguageSupport* languageSupport;
 public:
     Bank(const std::string& bankName);
 

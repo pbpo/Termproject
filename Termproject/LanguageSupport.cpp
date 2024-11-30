@@ -322,10 +322,53 @@ LanguageSupport::LanguageSupport() {
     messages["insufficient_funds_for_fee"]["English"] = "Insufficient funds for fee: KRW";
     messages["insufficient_funds_for_fee"]["Korean"] = "수수료 부족: KRW";
     
+    messages["prompt_additional_deposit"]["English"] = "Do you want to make an additional deposit to cover the fee? Enter the amount:";
+    messages["prompt_additional_deposit"]["Korean"] = "수수료를 지불하기 위해 추가 입금을 하시겠습니까? 금액을 입력하세요:";
 
+messages["bill_count_prompt"]["English"] = " bills of KRW ";
+    messages["bill_count_prompt"]["Korean"] = "개의 KRW 지폐: ";
+
+    messages["check_fee_payment_instruction"]["English"] = "Please pay the check fee in cash: KRW ";
+    messages["check_fee_payment_instruction"]["Korean"] = "수표 수수료를 현금으로 지불하세요: KRW ";
+
+    messages["fee_cash_overpaid"]["English"] = "Fee cash overpaid: KRW ";
+    messages["fee_cash_overpaid"]["Korean"] = "수수료 현금 초과 지불: KRW ";
+
+    messages["insert_fee_cash_instruction"]["English"] = "Insert fee cash:";
+    messages["insert_fee_cash_instruction"]["Korean"] = "수수료 현금을 삽입하세요:";
+
+    messages["fee_cash_accepted"]["English"] = "Fee cash accepted.";
+    messages["fee_cash_accepted"]["Korean"] = "수수료 현금이 접수되었습니다.";
+
+    messages["currency_unit"]["English"] = " KRW";
+    messages["currency_unit"]["Korean"] = " KRW";
+
+    messages["Transaction history exported to transaction_history.txt"]["English"] = "Transaction history exported to transaction_history.txt";
+    messages["Transaction history exported to transaction_history.txt"]["Korean"] = "거래 내역이 transaction_history.txt로 내보내졌습니다";
+
+    messages["Failed to open file for writing."]["English"] = "Failed to open file for writing.";
+    messages["Failed to open file for writing."]["Korean"] = "파일을 쓰기 위해 열지 못했습니다.";
  
+   messages["Transaction history successfully exported to "]["English"] = "Transaction history successfully exported to ";
+    messages["Transaction history successfully exported to "]["Korean"] = "거래 내역이 다음 파일로 성공적으로 내보내졌습니다: ";
 
+    messages["ATM [SN: "]["English"] = "ATM [SN: ";
+    messages["ATM [SN: "]["Korean"] = "ATM [일련 번호: ";
+
+    messages["1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit"]["English"] = "1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit";
+    messages["1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit"]["Korean"] = "1. 입금\n2. 출금\n3. 송금\n4. 종료";
     // **Note:** For messages that require dynamic values (like fees), append them during runtime.
+    messages["Account [Bank: "]["English"] = "Account [Bank: ";
+    messages["Account [Bank: "]["Korean"] = "계좌 [은행: ";
+
+    messages[", Owner: "]["English"] = ", Owner: ";
+    messages[", Owner: "]["Korean"] = ", 소유자: ";
+
+    messages["] balance: "]["English"] = "] balance: ";
+    messages["] balance: "]["Korean"] = "] 잔액: ";
+
+    
+
 }
 
 LanguageSupport* LanguageSupport::getInstance() {
