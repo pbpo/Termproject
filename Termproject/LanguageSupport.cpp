@@ -311,8 +311,7 @@ LanguageSupport::LanguageSupport() {
     messages["deposit_type"]["English"] = "Type";
     messages["deposit_type"]["Korean"] = "유형";
 
-    messages["deposit_transaction_details"]["English"] = "Deposit Transaction Details";
-    messages["deposit_transaction_details"]["Korean"] = "입금 거래 세부 정보";
+ 
 
     
 
