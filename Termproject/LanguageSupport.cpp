@@ -312,7 +312,15 @@ LanguageSupport::LanguageSupport() {
     messages["deposit_type"]["Korean"] = "유형";
 
  
+    // 추가
+    messages["fee_deducted_from_account"]["English"] = "Fee deducted from account: KRW ";
+    messages["fee_deducted_from_account"]["Korean"] = "수수료 차감 계좌에서: KRW ";
 
+    messages["fee_deducted_from_deposit"]["English"] = "Fee deducted from deposit: KRW ";
+    messages["fee_deducted_from_deposit"]["Korean"] = "수수료 차감 입금에서: KRW ";
+
+    messages["insufficient_funds_for_fee"]["English"] = "Insufficient funds for fee: KRW";
+    messages["insufficient_funds_for_fee"]["Korean"] = "수수료 부족: KRW";
     
 
  
