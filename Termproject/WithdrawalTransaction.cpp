@@ -16,8 +16,8 @@
 #include "Bank.hpp"
 #include "LanguageSupport.hpp"
 
-WithdrawalTransaction::WithdrawalTransaction(CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, const std::string& cardNumber)
-    : ITransaction(cashManager, transactionID, amount, cardNumber), account(account), fee(0) {}
+WithdrawalTransaction::WithdrawalTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, const std::string& cardNumber)
+    : ITransaction(primaryBank ,cashManager, transactionID, amount, cardNumber), account(account), fee(0) {}
 
 bool WithdrawalTransaction::execute() {
     auto systemStatus = SystemStatus::getInstance();

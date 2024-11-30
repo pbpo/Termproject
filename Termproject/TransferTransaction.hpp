@@ -20,7 +20,7 @@ private:
     int fee;
 
 public:
-    TransferTransaction(CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& sourceAccount, const std::shared_ptr<Account>& destinationAccount, TransferType transferType, const std::string& cardNumber);
+    TransferTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& sourceAccount, const std::shared_ptr<Account>& destinationAccount, TransferType transferType, const std::string& cardNumber);
 
     bool execute() override;
     void rollback() override;

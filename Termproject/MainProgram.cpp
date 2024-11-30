@@ -88,26 +88,26 @@ std::unique_ptr<ATM> createATM(BankManager* manager) {
 
     // Select bank if SINGLE
     std::shared_ptr<Bank> primaryBank = nullptr;
-    if (atmType == ATMType::SINGLE) {
-        while (true) {
-            auto bankNameVariant = InputHandler::getInput("Enter the bank name for the Single Bank ATM: ", InputType::STRING);
-            try {
-                std::string bankName = std::get<std::string>(bankNameVariant);
-                Bank* rawBank = manager->getBank(bankName);
-                if (rawBank) {
-                    primaryBank = std::shared_ptr<Bank>(rawBank, [](Bank*) {});
-                    std::cout << "Bank '" << bankName << "' selected for this ATM." << std::endl;
-                    break;
-                }
-                else {
-                    std::cout << "Bank '" << bankName << "' does not exist. Please enter a valid bank name." << std::endl;
-                }
+    
+    while (true) {
+        auto bankNameVariant = InputHandler::getInput("Enter the bank name for the Main Bank ATM: ", InputType::STRING);
+        try {
+            std::string bankName = std::get<std::string>(bankNameVariant);
+            Bank* rawBank = manager->getBank(bankName);
+            if (rawBank) {
+                primaryBank = std::shared_ptr<Bank>(rawBank, [](Bank*) {});
+                std::cout << "Bank '" << bankName << "' selected for this ATM." << std::endl;
+                break;
             }
-            catch (const std::bad_variant_access&) {
-                std::cout << "Invalid input. Please enter a valid bank name." << std::endl;
+            else {
+                std::cout << "Bank '" << bankName << "' does not exist. Please enter a valid bank name." << std::endl;
             }
         }
+        catch (const std::bad_variant_access&) {
+            std::cout << "Invalid input. Please enter a valid bank name." << std::endl;
+        }
     }
+    
 
     // Set bilingual status
     while (true) {

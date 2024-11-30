@@ -18,7 +18,7 @@ public:
         return "TXN" + std::to_string(dis(gen));
     }
 
-    static std::shared_ptr<ITransaction> createDepositTransaction(CashManager* cashManager, int amount, std::shared_ptr<Account> account, DepositType depositType, const std::string& cardNumber) {
+    static std::shared_ptr<ITransaction> createDepositTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, int amount, std::shared_ptr<Account> account, DepositType depositType, const std::string& cardNumber) {
         return std::make_shared<DepositTransaction>(
             cashManager,
             generateTransactionID(),
@@ -29,7 +29,7 @@ public:
         );
     }
 
-    static std::shared_ptr<ITransaction> createWithdrawalTransaction(CashManager* cashManager, int amount, std::shared_ptr<Account> account, const std::string& cardNumber) {
+    static std::shared_ptr<ITransaction> createWithdrawalTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, int amount, std::shared_ptr<Account> account, const std::string& cardNumber) {
         return std::make_shared<WithdrawalTransaction>(
             cashManager,
             generateTransactionID(),
@@ -39,7 +39,7 @@ public:
         );
     }
 
-    static std::shared_ptr<ITransaction> createTransferTransaction(CashManager* cashManager, int amount, std::shared_ptr<Account> sourceAccount, std::shared_ptr<Account> destinationAccount, TransferType transferType, const std::string& cardNumber) {
+    static std::shared_ptr<ITransaction> createTransferTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, int amount, std::shared_ptr<Account> sourceAccount, std::shared_ptr<Account> destinationAccount, TransferType transferType, const std::string& cardNumber) {
         return std::make_shared<TransferTransaction>(
             cashManager,
             generateTransactionID(),

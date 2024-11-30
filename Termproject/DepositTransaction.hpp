@@ -16,7 +16,7 @@ private:
 
 public:
     // amount 매개변수를 추가한 생성자
-    DepositTransaction(CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account,
+    DepositTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account,
         DepositType depositType, const std::string& cardNumber);
 
     bool execute() override;

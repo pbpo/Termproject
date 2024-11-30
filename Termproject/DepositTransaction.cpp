@@ -9,9 +9,9 @@
 
 
 
-DepositTransaction::DepositTransaction(CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account,
+DepositTransaction::DepositTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account,
     DepositType depositType, const std::string& cardNumber)
-    : ITransaction(cashManager, transactionID, amount, cardNumber), account(account), depositType(depositType), fee(0), feeDeductedFromAccount(false) {
+    : ITransaction(primaryBank,cashManager, transactionID, amount, cardNumber), account(account), depositType(depositType), fee(0), feeDeductedFromAccount(false) {
     languageSupport = LanguageSupport::getInstance();
 }
 

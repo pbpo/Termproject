@@ -13,8 +13,8 @@
 #include "InputHandler.hpp"
 #include "Bank.hpp" 
 
-TransferTransaction::TransferTransaction(CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& sourceAccount, const std::shared_ptr<Account>& destinationAccount, TransferType transferType, const std::string& cardNumber)
-    : ITransaction(cashManager, transactionID, amount, cardNumber), sourceAccount(sourceAccount), destinationAccount(destinationAccount), transferType(transferType), fee(0) {}
+TransferTransaction::TransferTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& sourceAccount, const std::shared_ptr<Account>& destinationAccount, TransferType transferType, const std::string& cardNumber)
+    : ITransaction(primaryBank,cashManager, transactionID, amount, cardNumber), sourceAccount(sourceAccount), destinationAccount(destinationAccount), transferType(transferType), fee(0) {}
 bool TransferTransaction::execute() {
     auto systemStatus = SystemStatus::getInstance();
     Bank* globalBank = systemStatus->getBank();

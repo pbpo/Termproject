@@ -18,7 +18,7 @@ private:
     int fee;
 
 public:
-    WithdrawalTransaction(CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, const std::string& cardNumber);
+    WithdrawalTransaction(std::shared_ptr<Bank> primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, const std::string& cardNumber);
 
     bool execute() override;
     void rollback() override;
