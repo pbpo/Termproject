@@ -25,7 +25,7 @@ bool isValidAccountNumber(const std::string& accountNumber) {
 }
 void initializeSystem() {
     // Initialize bank
-    std::shared_ptr<Bank> primaryBank = std::make_shared<Bank>("Kakao");
+    auto primaryBank = std::make_shared<Bank>("Primary Bank");
 
     // Get account information from user
     int numAccounts = 0;

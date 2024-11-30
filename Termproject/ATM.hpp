@@ -56,7 +56,7 @@ private:
 public:
     // Constructor
     ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank> primaryBank, bool isBilingual);
-
+ATM(const std::string& serialNumber, ATMType atmType, bool isBilingual);
     // Session management
     void startSession();
 

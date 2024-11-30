@@ -1,3 +1,10 @@
+//
+// ATM.cpp
+// Termproject
+//
+// Created by cho on 10/20/24.
+//
+
 #include "ATM.hpp"
 #include "DepositTransaction.hpp"
 #include "WithdrawalTransaction.hpp"
@@ -6,14 +13,18 @@
 #include "InputHandler.hpp"
 #include "SystemStatus.hpp"
 #include "TransactionFactory.hpp"
+#include "BankManager.hpp"
+#include "SecurityManager.hpp"
+#include "Utility.hpp" // Language enum을 위해 포함
 #include <iostream>
 #include <variant>
 #include <fstream>
+#include <algorithm>
 
 // Definition of the static member variable
 std::set<std::string> ATM::assignedSerialNumbers;
 
-// Constructor
+// Constructor for Single Bank ATM
 ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank> primaryBank, bool isBilingual)
     : atmType(atmType), primaryBank(primaryBank),
       languageSupport(LanguageSupport::getInstance()),
@@ -24,7 +35,7 @@ ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank>
 
     // Validate serial number (REQ 1.1)
     if (serialNumber.length() != 6 || !std::all_of(serialNumber.begin(), serialNumber.end(), ::isdigit)) {
-        throw InvalidSerialNumberException(languageSupport->getMessage("invalid_serial"));
+        throw InvalidSerialNumberException(languageSupport->getMessage("invalid_serial_number"));
     }
     if (assignedSerialNumbers.find(serialNumber) != assignedSerialNumbers.end()) {
         throw DuplicateSerialNumberException(languageSupport->getMessage("duplicate_serial"));
@@ -40,11 +51,12 @@ ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank>
     this->isBilingual = isBilingual;
     if (isBilingual) {
         int choice = 0;
-        auto choiceVariant = InputHandler::getInput(languageSupport->getMessage("select_language") + "\n", InputType::INT);
+        std::cout << languageSupport->getMessage("select_language") << std::endl;
+        auto choiceVariant = InputHandler::getInput("", InputType::INT);
         try {
             choice = std::get<int>(choiceVariant);
         } catch (const std::bad_variant_access&) {
-            std::cout << languageSupport->getMessage("invalid_input") << std::endl;
+            std::cout << languageSupport->getMessage("invalid_input_default_language") << std::endl;
             choice = 1;
         }
 
@@ -57,6 +69,54 @@ ATM::ATM(const std::string& serialNumber, ATMType atmType, std::shared_ptr<Bank>
         }
     }
 }
+
+// Constructor for Multi-Bank ATM
+ATM::ATM(const std::string& serialNumber, ATMType atmType, bool isBilingual)
+        : atmType(atmType), primaryBank(nullptr),
+          languageSupport(LanguageSupport::getInstance()),
+          cashManager(CashManager::getInstance()),
+          securityManager(SecurityManager::getInstance()),
+          wrongPasswordAttempts(0),
+          isAdminSession(false) 
+    {
+
+    // Validate serial number (REQ 1.1)
+    if (serialNumber.length() != 6 || !std::all_of(serialNumber.begin(), serialNumber.end(), ::isdigit)) {
+        throw InvalidSerialNumberException(languageSupport->getMessage("invalid_serial_number"));
+    }
+    if (assignedSerialNumbers.find(serialNumber) != assignedSerialNumbers.end()) {
+        throw DuplicateSerialNumberException(languageSupport->getMessage("duplicate_serial"));
+    }
+    this->serialNumber = serialNumber;
+    assignedSerialNumbers.insert(serialNumber);
+
+    // Set ATM in system status
+    SystemStatus::getInstance()->setATM(this);
+    // Multi-Bank ATM does not have a primary bank
+
+    // Language support setup
+    this->isBilingual = isBilingual;
+    if (isBilingual) {
+        int choice = 0;
+        std::cout << languageSupport->getMessage("select_language") << std::endl;
+        auto choiceVariant = InputHandler::getInput("", InputType::INT);
+        try {
+            choice = std::get<int>(choiceVariant);
+        } catch (const std::bad_variant_access&) {
+            std::cout << languageSupport->getMessage("invalid_input_default_language") << std::endl;
+            choice = 1;
+        }
+
+        if (choice == 1) {
+            languageSupport->setLanguage(Language::ENGLISH);
+        } else if (choice == 2) {
+            languageSupport->setLanguage(Language::KOREAN);
+        } else {
+            languageSupport->setLanguage(Language::ENGLISH);
+        }
+    }
+}
+
 // Start Session
 void ATM::startSession() {
     wrongPasswordAttempts = 0;
@@ -94,7 +154,6 @@ void ATM::startSession() {
             }
 
             // User authentication
-            
             while (wrongPasswordAttempts < 3) {
                 auto passwordVariant = InputHandler::getInput(languageSupport->getMessage("enter_password") + "\n", InputType::STRING);
                 std::string password;
@@ -108,9 +167,22 @@ void ATM::startSession() {
 
                 if (securityManager->authenticateUser(cardNumber, password)) {
                     // Authentication successful
-                    currentAccount = primaryBank->getAccount(cardNumber);
+                    if (atmType == ATMType::SINGLE) {
+                        currentAccount = primaryBank->getAccount(cardNumber);
+                    } else {
+                        // For Multi-Bank ATM, search all banks
+                        currentAccount = nullptr;
+                        auto banks = BankManager::getInstance()->getAllBanks();
+                        for (const auto& pair : banks) {
+                            currentAccount = pair.second->getAccount(cardNumber);
+                            if (currentAccount) {
+                                break;
+                            }
+                        }
+                    }
+
                     if (!currentAccount) {
-                        std::cout << "Account not found. Please contact the bank." << std::endl;
+                        std::cout << languageSupport->getMessage("account_not_found") << std::endl;
                         break;
                     }
                     currentCardNumber = cardNumber;
@@ -127,7 +199,7 @@ void ATM::startSession() {
             }
         } catch (const ATMException& e) {
             std::cout << e.what() << std::endl;
-            
+
             endSession();
             wrongPasswordAttempts = 0;
             continue;
@@ -135,7 +207,7 @@ void ATM::startSession() {
     }
 }
 
-// Add session transactionff
+// Add session transaction
 void ATM::addSessionTransaction(const std::shared_ptr<ITransaction>& transaction) {
     sessionTransactions.push_back(transaction);
 }
@@ -143,8 +215,8 @@ void ATM::addSessionTransaction(const std::shared_ptr<ITransaction>& transaction
 // Handle Admin Menu
 void ATM::handleAdminMenu() {
     while (true) {
-        std::cout << "Admin Menu:" << std::endl;
-        std::cout << "1. View Transaction History\n2. Export Transaction History to File\n3. Exit Admin Menu" << std::endl;
+        std::cout << languageSupport->getMessage("admin_menu") << std::endl;
+        std::cout << languageSupport->getMessage("admin_menu_options") << std::endl;
 
         int choice = 0;
         auto choiceVariant = InputHandler::getInput("", InputType::INT);
@@ -161,7 +233,7 @@ void ATM::handleAdminMenu() {
                 break;
             case 2:
                 exportTransactionHistoryToFile("transaction_history.txt");
-                std::cout << "Transaction history exported to transaction_history.txt" << std::endl;
+                std::cout << languageSupport->getMessage("transaction_history_exported") << std::endl;
                 break;
             case 3:
                 return;
@@ -174,41 +246,78 @@ void ATM::handleAdminMenu() {
 
 // Display all transaction history
 void ATM::displayAllTransactionHistory() const {
-    std::cout << "\n--- All Transaction History ---" << std::endl;
-    for (const auto& pair : primaryBank->getAllAccounts()) {
-        auto account = pair.second;
-        for (const auto& transaction : account->getTransactionHistory()) {
-            transaction->printDetails();
+    std::cout << "\n" << languageSupport->getMessage("all_transaction_history_header") << std::endl;
+
+    if (atmType == ATMType::SINGLE) {
+        // Single Bank ATM
+        for (const auto& pair : primaryBank->getAllAccounts()) {
+            auto account = pair.second;
+            for (const auto& transaction : account->getTransactionHistory()) {
+                transaction->printDetails();
+            }
+        }
+    } else {
+        // Multi-Bank ATM
+        auto banks = BankManager::getInstance()->getAllBanks();
+        for (const auto& bankPair : banks) {
+            auto bank = bankPair.second;
+            for (const auto& accountPair : bank->getAllAccounts()) {
+                auto account = accountPair.second;
+                for (const auto& transaction : account->getTransactionHistory()) {
+                    transaction->printDetails();
+                }
+            }
         }
     }
-    std::cout << "--- End of Transaction History ---\n" << std::endl;
+
+    std::cout << languageSupport->getMessage("end_transaction_history") << std::endl;
 }
 
 // Export transaction history to file
 void ATM::exportTransactionHistoryToFile(const std::string& filename) const {
     std::ofstream outFile(filename);
     if (!outFile.is_open()) {
-        std::cout << "Failed to open file for writing." << std::endl;
+        std::cout << languageSupport->getMessage("export_file_open_failed") << std::endl;
         return;
     }
 
-    outFile << "=== Transaction History ===\n";
-    for (const auto& pair : primaryBank->getAllAccounts()) {
-        auto account = pair.second;
-        for (const auto& transaction : account->getTransactionHistory()) {
-            outFile << "Transaction ID: " << transaction->getTransactionID() << ", ";
-            outFile << "Card Number: " << transaction->getCardNumber() << ", ";
-            outFile << "Type: " << transaction->getTransactionType() << ", ";
-            outFile << "Amount: " << transaction->getAmount() << "\n";
+    outFile << languageSupport->getMessage("transaction_history_file_header") << "\n";
+
+    if (atmType == ATMType::SINGLE) {
+        // Single Bank ATM
+        for (const auto& pair : primaryBank->getAllAccounts()) {
+            auto account = pair.second;
+            for (const auto& transaction : account->getTransactionHistory()) {
+                outFile << languageSupport->getMessage("transaction_id") << ": " << transaction->getTransactionID() << ", ";
+                outFile << languageSupport->getMessage("card_number") << ": " << transaction->getCardNumber() << ", ";
+                outFile << languageSupport->getMessage("transaction_type") << ": " << transaction->getTransactionType() << ", ";
+                outFile << languageSupport->getMessage("amount") << ": " << transaction->getAmount() << "\n";
+            }
+        }
+    } else {
+        // Multi-Bank ATM
+        auto banks = BankManager::getInstance()->getAllBanks();
+        for (const auto& bankPair : banks) {
+            auto bank = bankPair.second;
+            for (const auto& accountPair : bank->getAllAccounts()) {
+                auto account = accountPair.second;
+                for (const auto& transaction : account->getTransactionHistory()) {
+                    outFile << languageSupport->getMessage("transaction_id") << ": " << transaction->getTransactionID() << ", ";
+                    outFile << languageSupport->getMessage("card_number") << ": " << transaction->getCardNumber() << ", ";
+                    outFile << languageSupport->getMessage("transaction_type") << ": " << transaction->getTransactionType() << ", ";
+                    outFile << languageSupport->getMessage("amount") << ": " << transaction->getAmount() << "\n";
+                }
+            }
         }
     }
+
     outFile.close();
-    std::cout << "Transaction history successfully exported to " << filename << std::endl;
+    std::cout << languageSupport->getMessage("transaction_history_successfully_exported") << " " << filename << std::endl;
 }
 
 // Print cash inventory
 void ATM::displayCashInventory() const {
-    std::cout << "ATM [SN: " << serialNumber << "] ";
+    std::cout << languageSupport->getMessage("atm_serial_number") << ": " << serialNumber << " ";
     cashManager->printCashInventory();
 }
 
@@ -216,7 +325,7 @@ void ATM::displayCashInventory() const {
 void ATM::showMainMenu() {
     while (true) {
         std::cout << languageSupport->getMessage("select_transaction") << std::endl;
-        std::cout << "1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit" << std::endl;
+        std::cout << languageSupport->getMessage("main_menu_options") << std::endl;
 
         int choice = 0;
         auto choiceVariant = InputHandler::getInput("", InputType::INT);
@@ -250,7 +359,9 @@ void ATM::showMainMenu() {
 // Handle deposit
 void ATM::handleDeposit() {
     // Select deposit type
-    std::cout << "Select deposit type: 1. Cash 2. Check" << std::endl;
+    std::cout << languageSupport->getMessage("select_deposit_type") << std::endl;
+    std::cout << languageSupport->getMessage("deposit_type_options") << std::endl;
+
     int depositTypeInput;
     while (true) {
         auto depositTypeVariant = InputHandler::getInput("", InputType::INT);
@@ -270,7 +381,7 @@ void ATM::handleDeposit() {
     int totalAmount = 0;
 
     if (depositType == DepositType::CASH) {
-        // Accept cash denominations (REQ 10)
+        // Accept cash denominations
         std::map<Denomination, int> depositCash;
         int totalBills = 0;
 
@@ -280,11 +391,11 @@ void ATM::handleDeposit() {
             int denomValue = denomPair.second;
             int count = 0;
             while (true) {
-                auto countVariant = InputHandler::getInput("Number of KRW " + std::to_string(denomValue) + " bills: ", InputType::INT);
+                auto countVariant = InputHandler::getInput(languageSupport->getMessage("enter_bills") + ": ", InputType::INT);
                 try {
                     count = std::get<int>(countVariant);
                     if (count < 0) {
-                        std::cout << "Count cannot be negative. Please try again." << std::endl;
+                        std::cout << languageSupport->getMessage("negative_bill_count") << std::endl;
                         continue;
                     }
                     break;
@@ -303,7 +414,7 @@ void ATM::handleDeposit() {
         }
 
         if (totalBills > MAX_CASH_DEPOSIT) {
-            std::cout << "Maximum number of bills exceeded. Deposit cancelled." << std::endl;
+            std::cout << languageSupport->getMessage("max_bills_exceeded") << std::endl;
             return;
         }
 
@@ -336,7 +447,7 @@ void ATM::handleDeposit() {
             try {
                 checkAmount = std::get<int>(amountVariant);
                 if (checkAmount <= 0) {
-                    std::cout << "Amount must be positive. Please try again." << std::endl;
+                    std::cout << languageSupport->getMessage("positive_amount_required") << std::endl;
                     continue;
                 }
                 break;
@@ -346,7 +457,7 @@ void ATM::handleDeposit() {
         }
 
         if (checkAmount > MAX_CHECK_DEPOSIT) {
-            std::cout << "Maximum check deposit amount exceeded. Deposit cancelled." << std::endl;
+            std::cout << languageSupport->getMessage("max_check_deposit_exceeded") << std::endl;
             return;
         }
 
@@ -375,7 +486,7 @@ void ATM::handleWithdrawal() {
     }
 
     if (withdrawalCount >= 3) {
-        std::cout << "Maximum number of withdrawals per session exceeded." << std::endl;
+        std::cout << languageSupport->getMessage("max_withdrawals_exceeded") << std::endl;
         return;
     }
 
@@ -391,7 +502,7 @@ void ATM::handleWithdrawal() {
         }
 
         if (amount <= 0 || amount > MAX_WITHDRAWAL_AMOUNT) {
-            std::cout << "Amount must be positive and less than or equal to KRW 500,000. Please try again." << std::endl;
+            std::cout << languageSupport->getMessage("invalid_withdrawal_amount") << std::endl;
             continue;
         }
 
@@ -418,7 +529,7 @@ void ATM::handleWithdrawal() {
                 currentAccount->addTransaction(withdrawalTransaction);
                 addSessionTransaction(withdrawalTransaction);
 
-                std::cout << "Dispensed cash:" << std::endl;
+                std::cout << languageSupport->getMessage("dispensed_cash") << std::endl;
                 for (const auto& pair : dispensedCash) {
                     std::cout << "KRW " << DENOMINATION_VALUES.at(pair.first) << " x " << pair.second << std::endl;
                 }
@@ -433,11 +544,12 @@ void ATM::handleWithdrawal() {
     }
 }
 
-
 // Handle transfer
 void ATM::handleTransfer() {
     // Select transfer type
-    std::cout << "Select transfer type: 1. Cash Transfer 2. Account Transfer" << std::endl;
+    std::cout << languageSupport->getMessage("select_transfer_type") << std::endl;
+    std::cout << languageSupport->getMessage("transfer_type_options") << std::endl;
+
     int transferTypeInput;
     auto transferTypeVariant = InputHandler::getInput("", InputType::INT);
     try {
@@ -460,7 +572,7 @@ void ATM::handleTransfer() {
     // Enter destination account number
     std::string destinationAccountNumber;
     while (true) {
-        auto destAccountVariant = InputHandler::getInput("Enter destination account number:\n", InputType::STRING);
+        auto destAccountVariant = InputHandler::getInput(languageSupport->getMessage("enter_destination_account") + "\n", InputType::STRING);
         try {
             destinationAccountNumber = std::get<std::string>(destAccountVariant);
         } catch (const std::bad_variant_access&) {
@@ -469,23 +581,36 @@ void ATM::handleTransfer() {
         }
 
         if (destinationAccountNumber.empty()) {
-            std::cout << "Account number cannot be empty. Please try again." << std::endl;
+            std::cout << languageSupport->getMessage("empty_account_number") << std::endl;
             continue;
         }
         break;
     }
 
     // Get destination account
-    auto destinationAccount = primaryBank->getAccount(destinationAccountNumber);
+    std::shared_ptr<Account> destinationAccount = nullptr;
+    if (atmType == ATMType::SINGLE) {
+        destinationAccount = primaryBank->getAccount(destinationAccountNumber);
+    } else {
+        // For Multi-Bank ATM, search all banks
+        auto banks = BankManager::getInstance()->getAllBanks();
+        for (const auto& bankPair : banks) {
+            destinationAccount = bankPair.second->getAccount(destinationAccountNumber);
+            if (destinationAccount) {
+                break;
+            }
+        }
+    }
+
     if (!destinationAccount) {
-        std::cout << "Destination account not found." << std::endl;
+        std::cout << languageSupport->getMessage("destination_account_not_found") << std::endl;
         return;
     }
 
     // Enter transfer amount
     int amount = 0;
     while (true) {
-        auto amountVariant = InputHandler::getInput("Enter amount to transfer:\n", InputType::INT);
+        auto amountVariant = InputHandler::getInput(languageSupport->getMessage("enter_transfer_amount") + "\n", InputType::INT);
         try {
             amount = std::get<int>(amountVariant);
         } catch (const std::bad_variant_access&) {
@@ -494,7 +619,7 @@ void ATM::handleTransfer() {
         }
 
         if (amount <= 0) {
-            std::cout << "Amount must be positive. Please try again." << std::endl;
+            std::cout << languageSupport->getMessage("positive_amount_required") << std::endl;
             continue;
         }
         break;
@@ -509,7 +634,7 @@ void ATM::handleTransfer() {
             // Add transaction record
             currentAccount->addTransaction(transferTransaction);
             addSessionTransaction(transferTransaction);
-            std::cout << "Transfer successful." << std::endl;
+            std::cout << languageSupport->getMessage("transfer_successful") << std::endl;
         }
     } catch (const ATMException& e) {
         std::cout << e.what() << std::endl;
@@ -532,10 +657,9 @@ void ATM::printSessionSummary() {
         return;
     }
 
-    std::cout << "\n--- Session Summary ---\n";
+    std::cout << "\n" << languageSupport->getMessage("session_summary_header") << "\n";
     for (const auto& txn : sessionTransactions) {
         txn->printDetails();
     }
-    std::cout << "--- End of Summary ---\n" << std::endl;
+    std::cout << languageSupport->getMessage("end_session_summary") << "\n" << std::endl;
 }
-
