@@ -14,13 +14,13 @@
 
 using namespace std;
 
-// »ı¼ºÀÚ ±¸Çö
-// TestGroup »ı¼ºÀÚ¸¦ ½ÇÇàÇÒ ¶§ ±¸ÇöÇÑ Å×½ºÆ® °³¼ö¸¦ ÀÔ·ÂÇØÁÖ½Ã±â ¹Ù¶ø´Ï´Ù
+// ìƒì„±ì êµ¬í˜„
+// TestGroup ìƒì„±ìë¥¼ ì‹¤í–‰í•  ë•Œ êµ¬í˜„í•œ í…ŒìŠ¤íŠ¸ ê°œìˆ˜ë¥¼ ì…ë ¥í•´ì£¼ì‹œê¸° ë°”ëë‹ˆë‹¤
 LanguageSupportTest::LanguageSupportTest(int groupNumber) : TestGroup(groupNumber, 2) {}
 
-// Å×½ºÆ® ÇÔ¼ö ±¸Çö
+// í…ŒìŠ¤íŠ¸ í•¨ìˆ˜ êµ¬í˜„
 void LanguageSupportTest::test_1() {
-    //REQ8.1) ÀÌÁß ¾ğ¾î Áö¿øÀ¸·Î ±¸¼ºµÈ ATMÀº »ç¿ëÀÚ°¡ ¼±È£ÇÏ´Â ¾ğ¾î(¿µ¾î ¶Ç´Â ÇÑ±¹¾î)¸¦ ¼±ÅÃÇÒ ¼ö ÀÖ´Â ¿É¼ÇÀ» Á¦°øÇØ¾ß ÇÕ´Ï´Ù.
+    //REQ8.1) ì´ì¤‘ ì–¸ì–´ ì§€ì›ìœ¼ë¡œ êµ¬ì„±ëœ ATMì€ ì‚¬ìš©ìê°€ ì„ í˜¸í•˜ëŠ” ì–¸ì–´(ì˜ì–´ ë˜ëŠ” í•œêµ­ì–´)ë¥¼ ì„ íƒí•  ìˆ˜ ìˆëŠ” ì˜µì…˜ì„ ì œê³µí•´ì•¼ í•©ë‹ˆë‹¤.
     initializeSystemWithTestData();
 
 
@@ -30,7 +30,7 @@ void LanguageSupportTest::test_1() {
 }
 
 void LanguageSupportTest::test_2() {
-    //(REQ8.2) Æ¯Á¤ ¾ğ¾î°¡ ¼±ÅÃµÇ¸é, ¸ğµç ¸Ş´º´Â ¼±ÅÃµÈ ¾ğ¾î·Î Ç¥½ÃµÇ¾î¾ß ÇÕ´Ï´Ù.
+    //(REQ8.2) íŠ¹ì • ì–¸ì–´ê°€ ì„ íƒë˜ë©´, ëª¨ë“  ë©”ë‰´ëŠ” ì„ íƒëœ ì–¸ì–´ë¡œ í‘œì‹œë˜ì–´ì•¼ í•©ë‹ˆë‹¤.
     // 
     // Get the singleton instance of LanguageSupport
     LanguageSupport* languageSupport = LanguageSupport::getInstance();
@@ -51,9 +51,9 @@ void LanguageSupportTest::test_2() {
 
     // Define expected messages for Korean
     const std::map<std::string, std::string> expectedKorean = {
-        {"invalid_serial", "ÀÏ·Ã ¹øÈ£´Â °íÀ¯ÇÑ 6ÀÚ¸® ¼ıÀÚ¿©¾ß ÇÕ´Ï´Ù."},
-        {"withdrawal_successful", "Ãâ±İÀÌ ¿Ï·áµÇ¾ú½À´Ï´Ù."},
-        {"session_end", "ATMÀ» ÀÌ¿ëÇØ ÁÖ¼Å¼­ °¨»çÇÕ´Ï´Ù. ¼¼¼ÇÀÌ Á¾·áµÇ¾ú½À´Ï´Ù."}
+        {"invalid_serial", "ì¼ë ¨ ë²ˆí˜¸ëŠ” ê³ ìœ í•œ 6ìë¦¬ ìˆ«ìì—¬ì•¼ í•©ë‹ˆë‹¤."},
+        {"withdrawal_successful", "ì¶œê¸ˆì´ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤."},
+        {"session_end", "ATMì„ ì´ìš©í•´ ì£¼ì…”ì„œ ê°ì‚¬í•©ë‹ˆë‹¤. ì„¸ì…˜ì´ ì¢…ë£Œë˜ì—ˆìŠµë‹ˆë‹¤."}
     };
 
     // Test with English
@@ -76,29 +76,38 @@ void LanguageSupportTest::test_2() {
 }
 
 void LanguageSupportTest::initializeSystemWithTestData() {
-    // Create multiple banks
-    auto kakaoBank = std::make_shared<Bank>("Ä«Ä«¿À");
-    auto shinhanBank = std::make_shared<Bank>("½ÅÇÑ");
-    auto wooriBank = std::make_shared<Bank>("¿ì¸®");
 
-    // Test accounts for Ä«Ä«¿À
-    auto kakaoAccount1 = std::make_shared<Account>("Ä«Ä«¿À", "Alice", "1", 1000);
+    BankManager* manager = BankManager::getInstance();
+
+    manager->addBank(new Bank("ì¹´ì¹´ì˜¤"));
+    manager->addBank(new Bank("ì‹ í•œ"));
+    manager->addBank(new Bank("ìš°ë¦¬"));
+
+
+    Bank* kakaoBank = manager->getBank("ì¹´ì¹´ì˜¤");
+    Bank* shinhanBank = manager->getBank("ì‹ í•œ");
+    Bank* wooriBank = manager->getBank("ìš°ë¦¬");
+
+
+
+    // Test accounts for ì¹´ì¹´ì˜¤
+    auto kakaoAccount1 = std::make_shared<Account>("ì¹´ì¹´ì˜¤", "Alice", "1", 1000);
     kakaoBank->addAccount(kakaoAccount1);
-    SecurityManager::getInstance()->addUser("1", "1", "Ä«Ä«¿À");
+    SecurityManager::getInstance()->addUser("1", "1", "ì¹´ì¹´ì˜¤");
 
-    auto kakaoAccount2 = std::make_shared<Account>("Ä«Ä«¿À", "Bob", "2", 1500);
+    auto kakaoAccount2 = std::make_shared<Account>("ì¹´ì¹´ì˜¤", "Bob", "2", 1500);
     kakaoBank->addAccount(kakaoAccount2);
-    SecurityManager::getInstance()->addUser("2", "2", "Ä«Ä«¿À");
+    SecurityManager::getInstance()->addUser("2", "2", "ì¹´ì¹´ì˜¤");
 
-    // Test accounts for ½ÅÇÑ
-    auto shinhanAccount1 = std::make_shared<Account>("½ÅÇÑ", "Charlie", "3", 2000);
+    // Test accounts for ì‹ í•œ
+    auto shinhanAccount1 = std::make_shared<Account>("ì‹ í•œ", "Charlie", "3", 2000);
     shinhanBank->addAccount(shinhanAccount1);
-    SecurityManager::getInstance()->addUser("3", "3", "½ÅÇÑ");
+    SecurityManager::getInstance()->addUser("3", "3", "ì‹ í•œ");
 
-    // Test accounts for ¿ì¸®
-    auto wooriAccount1 = std::make_shared<Account>("¿ì¸®", "David", "4", 2500);
+    // Test accounts for ìš°ë¦¬
+    auto wooriAccount1 = std::make_shared<Account>("ìš°ë¦¬", "David", "4", 2500);
     wooriBank->addAccount(wooriAccount1);
-    SecurityManager::getInstance()->addUser("4", "4", "¿ì¸®");
+    SecurityManager::getInstance()->addUser("4", "4", "ìš°ë¦¬");
 
     // Add some cash to the ATM
     CashManager::getInstance()->addCash(Denomination::KRW_1000, 50);
@@ -106,17 +115,19 @@ void LanguageSupportTest::initializeSystemWithTestData() {
     CashManager::getInstance()->addCash(Denomination::KRW_10000, 30);
     CashManager::getInstance()->addCash(Denomination::KRW_50000, 20);
 
-    // Choose one bank as primary (e.g., Ä«Ä«¿À)
-    auto primaryBank = kakaoBank;
+    // Choose one bank as primary (e.g., ì¹´ì¹´ì˜¤)
+    std::shared_ptr<Bank> primaryBank(kakaoBank, [](Bank*) {
+        // Do nothing to avoid double deletion
+        });
+
 
     // Create and initialize the ATM
-    ATM atm("123456", ATMType::MULTI, primaryBank, true); // Multi-bank ATM
+    ATM atm("123456", ATMType::SINGLE, manager, primaryBank, true); // Multi-bank ATM
 
     // Set ATM and primary bank in SystemStatus
     SystemStatus::getInstance()->setATM(&atm);
-    SystemStatus::getInstance()->setBank(primaryBank.get());
 
-    // Note: Other banks (½ÅÇÑ, ¿ì¸®) are not directly managed by SystemStatus
+    // Note: Other banks (ì‹ í•œ, ìš°ë¦¬) are not directly managed by SystemStatus
     // They should be managed in your ATM's logic if needed.
 
     // Start the ATM session
