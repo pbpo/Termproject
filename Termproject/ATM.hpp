@@ -60,8 +60,8 @@ private:
 
 public:
     // Constructor
-    ATM(const std::string& serialNumber, ATMType atmType, BankManager* bankManager, std::shared_ptr<Bank> primaryBank, bool isBilingual);
-    ATM(const std::string& serialNumber, ATMType atmType, BankManager* bankManager, bool isBilingual);
+    ATM(const std::string& serialNumber, ATMType atmType, CashManager* cashManager, std::shared_ptr<Bank> primaryBank, bool isBilingual);
+    ATM(const std::string& serialNumber, ATMType atmType, CashManager* cashManager, bool isBilingual);
     // Session management
     void startSession();
 
@@ -71,5 +71,7 @@ public:
     bool getIsBilingual() const { return isBilingual; }
     // Transaction record management
     void addSessionTransaction(const std::shared_ptr<ITransaction>& transaction);
+    std::string& getSerialNumber() { return serialNumber; }
+
 
 };
