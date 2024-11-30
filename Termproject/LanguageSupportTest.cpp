@@ -110,10 +110,11 @@ void LanguageSupportTest::initializeSystemWithTestData() {
     SecurityManager::getInstance()->addUser("4", "4", "우리");
 
     // Add some cash to the ATM
-    CashManager::getInstance()->addCash(Denomination::KRW_1000, 50);
-    CashManager::getInstance()->addCash(Denomination::KRW_5000, 40);
-    CashManager::getInstance()->addCash(Denomination::KRW_10000, 30);
-    CashManager::getInstance()->addCash(Denomination::KRW_50000, 20);
+    CashManager* cashManager = new CashManager();
+    cashManager->addCash(Denomination::KRW_1000, 50);
+    cashManager->addCash(Denomination::KRW_5000, 40);
+    cashManager->addCash(Denomination::KRW_10000, 30);
+    cashManager->addCash(Denomination::KRW_50000, 20);
 
     // Choose one bank as primary (e.g., 카카오)
     std::shared_ptr<Bank> primaryBank(kakaoBank, [](Bank*) {
@@ -122,7 +123,7 @@ void LanguageSupportTest::initializeSystemWithTestData() {
 
 
     // Create and initialize the ATM
-    ATM atm("123456", ATMType::SINGLE, manager, primaryBank, true); // Multi-bank ATM
+    ATM atm("123456", ATMType::SINGLE, cashManager, primaryBank, true); // Multi-bank ATM
 
     // Set ATM and primary bank in SystemStatus
     SystemStatus::getInstance()->setATM(&atm);
