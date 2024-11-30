@@ -1,11 +1,3 @@
-//
-//  CashManager.hpp
-//  Termproject
-//
-//  Created by cho on 10/20/24.
-//
-
-// CashManager.hpp
 #pragma once
 
 #include <map>
@@ -14,12 +6,15 @@
 class CashManager {
 private:
     std::map<Denomination, int> cashInventory;
-    static CashManager* instance;
-    CashManager();
 
 public:
-    static CashManager* getInstance();
+    // Constructor
+    CashManager();
 
+    // Destructor
+    ~CashManager() = default;
+
+    // Methods to manage cash
     bool dispenseCash(int amount, std::map<Denomination, int>& dispensedCash);
     void acceptCash(const std::map<Denomination, int>& cashDetails);
     void addCash(Denomination denom, int count);
