@@ -1,5 +1,6 @@
 #include <iostream>
 #include <memory>
+#include <vector>
 #include "MainProgram.hpp"
 #include "ATM.hpp"
 #include "Bank.hpp"
@@ -23,9 +24,117 @@ bool isValidAccountNumber(const std::string& accountNumber) {
 
     return true;
 }
+
+std::unique_ptr<ATM> createATM(BankManager* manager) {
+    std::string serialNumber;
+    int atmTypeInput;
+    bool isBilingual;
+
+    // Input ATM serial number
+    while (true) {
+        auto serialVariant = InputHandler::getInput("Enter ATM serial number (6-digit): ", InputType::STRING);
+        try {
+            serialNumber = std::get<std::string>(serialVariant);
+            if (serialNumber.length() != 6) {
+                std::cout << "Serial number must be exactly 6 digits. Please try again." << std::endl;
+                continue;
+            }
+            break;
+        }
+        catch (const std::bad_variant_access&) {
+            std::cout << "Invalid input. Please enter a 6-digit number." << std::endl;
+        }
+    }
+
+    // Initialize CashManager with user input
+    CashManager* cashManager = new CashManager();
+    std::cout << "Enter initial cash for the ATM:" << std::endl;
+    for (const auto& pair : DENOMINATION_VALUES) {
+        int count = 0;
+        while (true) {
+            auto countVariant = InputHandler::getInput("Number of KRW " + std::to_string(pair.second) + " bills: ", InputType::INT);
+            try {
+                count = std::get<int>(countVariant);
+                if (count < 0) {
+                    std::cout << "Number of bills cannot be negative." << std::endl;
+                    continue;
+                }
+                break;
+            }
+            catch (const std::bad_variant_access&) {
+                std::cout << "Invalid input. Please enter a non-negative integer." << std::endl;
+            }
+        }
+        cashManager->addCash(pair.first, count);
+    }
+
+    // Input ATM type
+    while (true) {
+
+        auto atmTypeVariant = InputHandler::getInput("Select ATM type: 1. Single Bank ATM 2. Multi-Bank ATM: ", InputType::INT);
+        try {
+            atmTypeInput = std::get<int>(atmTypeVariant);
+            if (atmTypeInput != 1 && atmTypeInput != 2) {
+                std::cout << "Invalid choice. Please enter 1 or 2." << std::endl;
+                continue;
+            }
+            break;
+        }
+        catch (const std::bad_variant_access&) {
+            std::cout << "Invalid input. Please enter 1 or 2." << std::endl;
+        }
+    }
+    ATMType atmType = (atmTypeInput == 1) ? ATMType::SINGLE : ATMType::MULTI;
+
+    // Select bank if SINGLE
+    std::shared_ptr<Bank> primaryBank = nullptr;
+    if (atmType == ATMType::SINGLE) {
+        while (true) {
+            auto bankNameVariant = InputHandler::getInput("Enter the bank name for the Single Bank ATM: ", InputType::STRING);
+            try {
+                std::string bankName = std::get<std::string>(bankNameVariant);
+                Bank* rawBank = manager->getBank(bankName);
+                if (rawBank) {
+                    primaryBank = std::shared_ptr<Bank>(rawBank, [](Bank*) {});
+                    std::cout << "Bank '" << bankName << "' selected for this ATM." << std::endl;
+                    break;
+                }
+                else {
+                    std::cout << "Bank '" << bankName << "' does not exist. Please enter a valid bank name." << std::endl;
+                }
+            }
+            catch (const std::bad_variant_access&) {
+                std::cout << "Invalid input. Please enter a valid bank name." << std::endl;
+            }
+        }
+    }
+
+    // Set bilingual status
+    while (true) {
+        auto bilingualVariant = InputHandler::getInput("Is the ATM bilingual? (1. Yes 2. No): ", InputType::INT);
+        try {
+            int bilingualInput = std::get<int>(bilingualVariant);
+            if (bilingualInput != 1 && bilingualInput != 2) {
+                std::cout << "Invalid choice. Please enter 1 or 2." << std::endl;
+                continue;
+            }
+            isBilingual = (bilingualInput == 1);
+            break;
+        }
+        catch (const std::bad_variant_access&) {
+            std::cout << "Invalid input. Please enter 1 or 2." << std::endl;
+        }
+    }
+
+    // Create and return the ATM
+    return std::make_unique<ATM>(serialNumber, atmType, cashManager, primaryBank, isBilingual);
+}
+
+
 void initializeSystem() {
     // Initialize bank
     BankManager* manager = BankManager::getInstance();
+    std::vector<ATM> atmList;
 
     // Get account information from user
     int numAccounts = 0;
@@ -114,132 +223,50 @@ void initializeSystem() {
         SecurityManager::getInstance()->addUser(accountNumber, password, bankName); // ����ڰ� ������ ��й�ȣ ���
     }
 
-    // Bank deposits cash into the ATM
-    std::cout << "Enter initial cash for the ATM:" << std::endl;
-    for (const auto& pair : DENOMINATION_VALUES) {
-        int count = 0;
-        while (true) {
-            auto countVariant = InputHandler::getInput("Number of KRW " + std::to_string(pair.second) + " bills: ", InputType::INT);
-            try {
-                count = std::get<int>(countVariant);
-                if (count < 0) {
-                    std::cout << "Number of bills cannot be negative." << std::endl;
-                    continue;
-                }
+    // Create multiple ATMs
+    int numATMs;
+    while (true) {
+        auto numATMsVariant = InputHandler::getInput("Enter number of ATMs to create: ", InputType::INT);
+        try {
+            numATMs = std::get<int>(numATMsVariant);
+            if (numATMs <= 0) {
+                std::cout << "Number of ATMs must be positive." << std::endl;
+                continue;
+            }
+            break;
+        }
+        catch (const std::bad_variant_access&) {
+            std::cout << "Invalid input. Please enter a positive integer." << std::endl;
+        }
+    }
+
+    std::vector<std::unique_ptr<ATM>> atms;
+    for (int i = 0; i < numATMs; ++i) {
+        std::cout << "Creating ATM " << (i + 1) << " of " << numATMs << ":" << std::endl;
+        atms.push_back(createATM(manager));
+    }
+
+    // Allow user to select an ATM by serial number
+    while (true) {
+        std::string selectedSerial;
+        auto serialVariant = InputHandler::getInput("Enter the serial number of the ATM to start a session: ", InputType::STRING);
+        try {
+            selectedSerial = std::get<std::string>(serialVariant);
+            auto it = std::find_if(atms.begin(), atms.end(), [&selectedSerial](const std::unique_ptr<ATM>& atm) {
+                return atm->getSerialNumber() == selectedSerial;
+                });
+
+            if (it != atms.end()) {
+                SystemStatus::getInstance()->setATM(it->get());
+                it->get()->startSession();
                 break;
             }
-            catch (const std::bad_variant_access&) {
-                std::cout << "Invalid input. Please enter a non-negative integer." << std::endl;
+            else {
+                std::cout << "ATM with serial number " << selectedSerial << " not found. Please try again." << std::endl;
             }
-        }
-        CashManager::getInstance()->addCash(pair.first, count);
-    }
-
-    // Initialize ATM
-    std::string serialNumber;
-    int atmTypeInput;
-    bool isBilingual;
-
-    // ATM �ø��� ��ȣ �Է� (���ڿ��� ����)
-    while (true) {
-        auto serialVariant = InputHandler::getInput("Enter ATM serial number (6-digit): ", InputType::STRING);
-        try {
-            serialNumber = std::get<std::string>(serialVariant);
-            if (serialNumber.length() != 6) {
-                std::cout << "Serial number must be exactly 6 digits. Please try again." << std::endl;
-                continue;
-            }
-            bool allDigits = true;
-            for (char c : serialNumber) {
-                if (!isdigit(c)) {
-                    allDigits = false;
-                    break;
-                }
-            }
-            if (!allDigits) {
-                std::cout << "Serial number must contain only digits. Please try again." << std::endl;
-                continue;
-            }
-            break;
         }
         catch (const std::bad_variant_access&) {
-            std::cout << "Invalid input. Please enter a 6-digit number." << std::endl;
+            std::cout << "Invalid input. Please enter a valid serial number." << std::endl;
         }
     }
-
-    // ATM Ÿ�� �Է�
-    while (true) {
-        auto atmTypeVariant = InputHandler::getInput("Select ATM type: 1. Single Bank ATM 2. Multi-Bank ATM: ", InputType::INT);
-        try {
-            atmTypeInput = std::get<int>(atmTypeVariant);
-            if (atmTypeInput != 1 && atmTypeInput != 2) {
-                std::cout << "Invalid choice. Please enter 1 or 2." << std::endl;
-                continue;
-            }
-            break;
-        }
-        catch (const std::bad_variant_access&) {
-            std::cout << "Invalid input. Please enter 1 or 2." << std::endl;
-        }
-    }
-    ATMType atmType = (atmTypeInput == 1) ? ATMType::SINGLE : ATMType::MULTI;
-
-
-    // If SINGLE, select a bank
-    std::shared_ptr<Bank> primaryBank = nullptr;
-    if (atmType == ATMType::SINGLE) {
-        while (true) {
-            auto bankNameVariant = InputHandler::getInput("Enter the bank name for the Single Bank ATM: ", InputType::STRING);
-            try {
-                std::string bankName = std::get<std::string>(bankNameVariant);
-
-                // Get the bank from BankManager
-                Bank* rawBank = BankManager::getInstance()->getBank(bankName);
-                if (rawBank) {
-                    primaryBank = std::shared_ptr<Bank>(rawBank, [](Bank*) {}); // Create a shared_ptr without deleting rawBank
-                    std::cout << "Bank '" << bankName << "' selected for this ATM." << std::endl;
-                    break;
-                }
-                else {
-                    std::cout << "Bank '" << bankName << "' does not exist. Please enter a valid bank name." << std::endl;
-                }
-            }
-            catch (const std::bad_variant_access&) {
-                std::cout << "Invalid input. Please enter a valid bank name." << std::endl;
-            }
-        }
-    }
-
-    // ATM ��� ����
-    while (true) {
-        auto bilingualVariant = InputHandler::getInput("Is the ATM bilingual? (1. Yes 2. No): ", InputType::INT);
-        try {
-            int bilingualInput = std::get<int>(bilingualVariant);
-            if (bilingualInput != 1 && bilingualInput != 2) {
-                std::cout << "Invalid choice. Please enter 1 or 2." << std::endl;
-                continue;
-            }
-            isBilingual = (bilingualInput == 1);
-            break;
-        }
-        catch (const std::bad_variant_access&) {
-            std::cout << "Invalid input. Please enter 1 or 2." << std::endl;
-        }
-    }
-
-    // Create ATM
-    ATM atm(serialNumber, atmType, manager, primaryBank, isBilingual);
-
-    if (atmType == ATMType::SINGLE && primaryBank) {
-               std::cout << "Single Bank ATM created for bank: " << primaryBank->getBankName() << std::endl;
-    }
-    else {
-               std::cout << "Multi-Bank ATM created." << std::endl;
-    }
-
-    // Set ATM and Bank in SystemStatus
-    SystemStatus::getInstance()->setATM(&atm);
-
-    // Start the program
-    atm.startSession();
 };
