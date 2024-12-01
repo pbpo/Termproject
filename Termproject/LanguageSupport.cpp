@@ -64,6 +64,9 @@ LanguageSupport::LanguageSupport() {
 
     messages["invalid_serial_number"]["English"] = "Serial number must be a 6-digit number.";
     messages["invalid_serial_number"]["Korean"] = "일련 번호는 6자리 숫자여야 합니다.";
+    messages["amount"]["Korean"] = "금액";
+    messages["amount"]["English"] = "Amount";
+
 
     messages["select_language"]["English"] = "Select language:\n1. English\n2. Korean";
     messages["select_language"]["Korean"] = "언어를 선택하세요:\n1. 영어\n2. 한국어";
@@ -250,6 +253,10 @@ LanguageSupport::LanguageSupport() {
 
    messages["withdrawal_transaction_details"]["English"] = "Withdrawal Transaction Details";
     messages["withdrawal_transaction_details"]["Korean"] = "출금 거래 세부 정보";
+
+messages["dispensed_bills"]["English"] = "Dispensed bills:";
+    messages["dispensed_bills"]["Korean"] = "지급된 지폐:";
+
 
     messages["fee_deducted"]["English"] = "Fee deducted: KRW ";
     messages["fee_deducted"]["Korean"] = "수수료 차감: KRW ";
@@ -500,6 +507,15 @@ messages["Transferred KRW "]["English"] = "Transferred KRW ";
 
 messages[" to account "]["English"] = " to account ";
     messages[" to account "]["Korean"] = " 계좌로 ";
+
+messages["won"]["English"] = "won";
+    messages["won"]["Korean"] = "원";
+
+    messages["cannot_dispense_requested_amount"]["English"] = "ATM cannot dispense the requested amount with available denominations. Transaction rolled back.";
+    messages["cannot_dispense_requested_amount"]["Korean"] = "ATM에서 사용 가능한 지폐로 요청한 금액을 지급할 수 없습니다. 거래가 취소되었습니다.";
+
+
+
 
     }
 
