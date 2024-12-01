@@ -520,6 +520,9 @@ messages["1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit"]["English"] = "1. Dep
 
 messages["Account not found. Please contact the bank."]["English"] = "Account not found. Please contact the bank.";
     messages["Account not found. Please contact the bank."]["Korean"] = "계좌를 찾을 수 없습니다. 은행에 문의하세요.";
+
+    messages["exceed_limit"]["English"] = "Maximum number of deposits per session exceeded.";
+    messages["exceed_limit"]["Korean"] = "세션당 최대 입금 횟수를 초과했습니다.";
     }
 
 

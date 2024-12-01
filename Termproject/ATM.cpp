@@ -25,6 +25,8 @@ ATM::ATM(const std::string& serialNumber, ATMType atmType, CashManager* cashMana
     cashManager(cashManager),
     securityManager(SecurityManager::getInstance()),
     wrongPasswordAttempts(0),
+     checkDeposits(0),
+    cashDeposits(0),
     isAdminSession(false),
     transactionLogger(nullptr) {
 
@@ -323,6 +325,7 @@ void ATM::showMainMenu() {
         std::cout << languageSupport->getMessage("1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit") << std::endl;
 
         int choice = 0;
+        
         auto choiceVariant = InputHandler::getInput("", InputType::INT);
         try {
             choice = std::get<int>(choiceVariant);
@@ -330,6 +333,14 @@ void ATM::showMainMenu() {
         catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
             continue;
+        }
+            if(checkDeposits>=30||cashDeposits>=50){
+                    checkDeposits=0;
+        cashDeposits=0;
+         wrongPasswordAttempts = 0;
+            std::cout << languageSupport->getMessage("exceed_limit") << std::endl;
+            endSession();
+            return;
         }
 
         switch (choice) {
@@ -344,6 +355,8 @@ void ATM::showMainMenu() {
             break;
         case 4:
         wrongPasswordAttempts = 0;
+        checkDeposits=0;
+        cashDeposits=0;
             endSession();
             return;
         default:
@@ -354,6 +367,14 @@ void ATM::showMainMenu() {
 }
 
 void ATM::handleDeposit() {
+            if(checkDeposits>=30||cashDeposits>=50){
+                    checkDeposits=0;
+        cashDeposits=0;
+         wrongPasswordAttempts = 0;
+            std::cout << languageSupport->getMessage("exceed_limit") << std::endl;
+            endSession();
+            return;
+        }
     // 입금 유형 선택
     std::cout << languageSupport->getMessage("select_deposit_type") << std::endl;
     std::cout << "1. " << languageSupport->getMessage("cash") << " 2. " << languageSupport->getMessage("check") << std::endl;
@@ -383,6 +404,7 @@ void ATM::handleDeposit() {
 
             if (depositType == DepositType::CHECK) {
                 auto amountVariant = InputHandler::getInput(languageSupport->getMessage("enter_deposit_amount"), InputType::INT);
+               
                 amount = std::get<int>(amountVariant);
                 if (amount <= 0) {
                     std::cout << languageSupport->getMessage("invalid_amount") << std::endl;
@@ -399,33 +421,41 @@ void ATM::handleDeposit() {
         catch (const std::bad_variant_access&) {
             std::cout << languageSupport->getMessage("invalid_input") << std::endl;
         }
+        
         auto depositTransaction = TransactionFactory::createDepositTransaction(primaryBank->getBankName(),cashManager, amount, currentAccount, depositType, currentCardNumber);
- 
+
         // 트랜잭션 실행
-        if (depositTransaction->execute()) {
-            // 거래 기록 추가
-            currentAccount->addTransaction(depositTransaction);
-            addSessionTransaction(depositTransaction);
-            std::cout << languageSupport->getMessage("deposit_successful") << std::endl;
+     if (depositTransaction->execute()) {
 
-            // 로그 기록
-            if (transactionLogger) {
-                transactionLogger->logTransaction(
-                    depositTransaction->getTransactionID(),
-                    depositTransaction->getCardNumber(),
-                    depositTransaction->getTransactionType(),
-                    depositTransaction->getAmount()
-                );
-            }
+        // 거래 기록 추가
+        currentAccount->addTransaction(depositTransaction);
+        addSessionTransaction(depositTransaction);
+        std::cout << languageSupport->getMessage("deposit_successful") << std::endl;
+
+        // 로그 기록
+        if (transactionLogger) {
+            transactionLogger->logTransaction(
+                depositTransaction->getTransactionID(),
+                depositTransaction->getCardNumber(),
+                depositTransaction->getTransactionType(),
+                depositTransaction->getAmount()
+            );
         }
-        else {
-            std::cout << languageSupport->getMessage("deposit_failed") << std::endl;
-        }
+
+        // 입금 횟수 증가
+
     }
-
+    else {
+        std::cout << languageSupport->getMessage("deposit_failed") << std::endl;
+    }
+}
     // DepositTransaction 객체 생성
     auto depositTransaction = TransactionFactory::createDepositTransaction(primaryBank->getBankName(),cashManager, amount, currentAccount, depositType, currentCardNumber);
-
+                if (depositType == DepositType::CHECK) {
+            checkDeposits += 1;
+        } else {
+            cashDeposits += 1;
+        }
     // 트랜잭션 실행
     if (depositTransaction->execute()) {
         // 거래 기록 추가

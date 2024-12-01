@@ -43,6 +43,8 @@ private:
     std::shared_ptr<Account> currentAccount;
     std::vector<std::shared_ptr<ITransaction>> sessionTransactions;
     int wrongPasswordAttempts;
+    int  checkDeposits;
+    int cashDeposits;
     bool isAdminSession;
     std::unique_ptr<TransactionLogger> transactionLogger;
     std::vector<std::string> transactionHistory; // 거래 내역 저장
