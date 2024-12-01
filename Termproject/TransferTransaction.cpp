@@ -135,7 +135,7 @@ int totalFeeInserted = 0;
         int excess = totalFeeInserted - fee;
         std::map<Denomination, int> adjustedfeeCasher;
         std::map<Denomination, int> excessfeeCasher;
-cashManager->acceptCash(feeCasher);
+
         if (excess > 0) {
             std::cout << languageSupport->getMessage("fee_cash_overpaid") << excess << " " << languageSupport->getMessage("currency_unit")
                       << " " << languageSupport->getMessage("will_be_returned") << std::endl;

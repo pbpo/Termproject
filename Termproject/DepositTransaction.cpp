@@ -181,7 +181,7 @@ bool DepositTransaction::execute() {
         int excess = totalFeeInserted - fee;
         std::map<Denomination, int> adjustedFeeCash;
         std::map<Denomination, int> excessFeeCash;
-cashManager->acceptCash(feeCash);
+
         if (excess > 0) {
             std::cout << languageSupport->getMessage("fee_cash_overpaid") << excess << " " << languageSupport->getMessage("currency_unit")
                       << " " << languageSupport->getMessage("will_be_returned") << std::endl;
