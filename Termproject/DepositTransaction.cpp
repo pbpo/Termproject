@@ -181,7 +181,7 @@ bool DepositTransaction::execute() {
         int excess = totalFeeInserted - fee;
         std::map<Denomination, int> adjustedFeeCash;
         std::map<Denomination, int> excessFeeCash;
-
+cashManager->acceptCash(feeCash);
         if (excess > 0) {
             std::cout << languageSupport->getMessage("fee_cash_overpaid") << excess << " " << languageSupport->getMessage("currency_unit")
                       << " " << languageSupport->getMessage("will_be_returned") << std::endl;
@@ -207,23 +207,19 @@ bool DepositTransaction::execute() {
 
             if (feeToAdjust > 0) {
                 // Unable to make exact fee amount with provided bills
-                std::cout << languageSupport->getMessage("cannot_make_exact_fee_amount") << std::endl;
+                
                 // Optionally, handle this by requesting additional bills or accepting overpayment
                 // For simplicity, we'll deposit the overpayment into the account
                 account->deposit(feeToAdjust);
-                std::cout << languageSupport->getMessage("overpayment_deposited_into_account") << feeToAdjust << " " << languageSupport->getMessage("currency_unit") << std::endl;
+               
                 // Adjust excess accordingly
                 excess -= feeToAdjust;
             }
 
-            // Return excess cash to user
-            if (!excessFeeCash.empty()) {
-                std::cout << languageSupport->getMessage("returning_excess_cash") << std::endl;
-                for (const auto& pair : excessFeeCash) {
-                    std::cout << "Returning " << pair.second << " bills of " << DENOMINATION_VALUES.at(pair.first) << " KRW" << std::endl;
-                }
-                // Implement physical cash return logic here
-                // Example: cashManager->dispenseCash(excess, excessCash); // Not needed as we already allocated excessFeeCash
+            // Deposit excess amount into account instead of returning cash
+            if (excess > 0) {
+                account->deposit(excess);
+                
             }
 
             // Accept only the adjusted fee cash into CashManager
@@ -263,21 +259,11 @@ void DepositTransaction::rollback() {
             std::cout << languageSupport->getMessage("fee_refunded") << fee << " " << languageSupport->getMessage("currency_unit") << std::endl;
         }
 
-        // Handle refund for check deposit fee paid in cash
+        // Handle refund for check deposit fee by depositing back into account
         if (depositType == DepositType::CHECK) {
-            // Attempt to refund fee in cash
-            std::map<Denomination, int> feeRefundCash;
-            bool refundSuccess = cashManager->dispenseCash(fee, feeRefundCash);
-            if (refundSuccess) {
-                std::cout << languageSupport->getMessage("fee_refunded_in_cash") << fee << " " << languageSupport->getMessage("currency_unit") << std::endl;
-                // Implement physical refund logic here
-            }
-            else {
-                // If refund fails, deposit fee back into account
-                account->deposit(fee);
-                std::cout << languageSupport->getMessage("fee_refund_failed_deposited") << fee << " " << languageSupport->getMessage("currency_unit")
-                          << " " << languageSupport->getMessage("deposited_into_account") << std::endl;
-            }
+            // Deposit fee back into account
+            account->deposit(fee);
+            std::cout << languageSupport->getMessage("fee_refunded_into_account") << fee << " " << languageSupport->getMessage("currency_unit") << std::endl;
         }
     }
     catch (const std::exception& e) {

@@ -573,9 +573,10 @@ void ATM::handleTransfer() {
         std::cout << languageSupport->getMessage("Destination account not found.") << std::endl;
         return;
     }
-
+    
     // Enter transfer amount
     int amount = 0;
+    if(transferTypeInput == 2){
     while (true) {
         auto amountVariant = InputHandler::getInput("Enter amount to transfer:\n", InputType::INT);
         try {
@@ -591,8 +592,9 @@ void ATM::handleTransfer() {
             continue;
         }
         break;
-    }
-
+    }}
+    
+ 
     // Create transaction
     auto transferTransaction = TransactionFactory::createTransferTransaction(primaryBank->getBankName(),cashManager,amount, currentAccount, destinationAccount, transferType, currentCardNumber);
 

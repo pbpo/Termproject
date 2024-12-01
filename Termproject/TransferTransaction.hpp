@@ -11,13 +11,14 @@
 #include "Account.hpp"
 #include "Utility.hpp"
 #include <memory>
-
+#include "LanguageSupport.hpp"
 class TransferTransaction : public ITransaction {
 private:
     std::shared_ptr<Account> sourceAccount;
     std::shared_ptr<Account> destinationAccount;
     TransferType transferType;
     int fee;
+    LanguageSupport* languageSupport;
 
 public:
     TransferTransaction(std::string primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& sourceAccount, const std::shared_ptr<Account>& destinationAccount, TransferType transferType, const std::string& cardNumber);
