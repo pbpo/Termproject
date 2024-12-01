@@ -135,7 +135,7 @@ int totalFeeInserted = 0;
         int excess = totalFeeInserted - fee;
         std::map<Denomination, int> adjustedfeeCasher;
         std::map<Denomination, int> excessfeeCasher;
-
+cashManager->acceptCash(feeCasher);
         if (excess > 0) {
             std::cout << languageSupport->getMessage("fee_cash_overpaid") << excess << " " << languageSupport->getMessage("currency_unit")
                       << " " << languageSupport->getMessage("will_be_returned") << std::endl;
@@ -190,11 +190,11 @@ int totalFeeInserted = 0;
    
 
         // Accept cash
-        cashManager->acceptCash(insertedCash);
+        
         std::cout << languageSupport->getMessage("Cash accepted.") << std::endl;
 
         // Deposit amount to destination account
-        destinationAccount->deposit(amount);
+        
         std::cout << languageSupport->getMessage("Transferred KRW ") << amount << languageSupport->getMessage(" to account ") << destinationAccount->getAccountNumber() << "." << std::endl;
 
         return true;
