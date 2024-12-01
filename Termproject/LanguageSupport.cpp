@@ -511,6 +511,9 @@ messages[" to account "]["English"] = " to account ";
 messages["won"]["English"] = "won";
     messages["won"]["Korean"] = "원";
 
+    messages["bills"]["English"] = " bills";
+    messages["bills"]["Korean"] = "개";
+
     messages["cannot_dispense_requested_amount"]["English"] = "ATM cannot dispense the requested amount with available denominations. Transaction rolled back.";
     messages["cannot_dispense_requested_amount"]["Korean"] = "ATM에서 사용 가능한 지폐로 요청한 금액을 지급할 수 없습니다. 거래가 취소되었습니다.";
 

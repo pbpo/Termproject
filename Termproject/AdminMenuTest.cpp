@@ -75,10 +75,10 @@ void AdminMenuTest::initializeSystemWithTestData() {
 
     // Add some cash to the ATM
     CashManager* cashManager = new CashManager();
-    cashManager->addCash(Denomination::KRW_1000, 50);
-    cashManager->addCash(Denomination::KRW_5000, 40);
-    cashManager->addCash(Denomination::KRW_10000, 30);
-    cashManager->addCash(Denomination::KRW_50000, 20);
+    cashManager->addCash(Denomination::KRW_1000, 0);
+    cashManager->addCash(Denomination::KRW_5000, 0);
+    cashManager->addCash(Denomination::KRW_10000, 0);
+    cashManager->addCash(Denomination::KRW_50000, 0);
 
     // Choose one bank as primary (e.g., 카카오)
     std::shared_ptr<Bank> primaryBank(kakaoBank, [](Bank*) {
