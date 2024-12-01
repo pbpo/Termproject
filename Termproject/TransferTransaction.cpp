@@ -40,8 +40,8 @@ bool TransferTransaction::execute() {
         int totalAmount = amount + fee;
         if (sourceAccount->withdraw(totalAmount)) {
             destinationAccount->deposit(amount);
-            std::cout << "Transferred KRW " << amount << " from account " << sourceAccount->getAccountNumber()
-                      << " to account " << destinationAccount->getAccountNumber() << "." << std::endl;
+            std::cout << languageSupport->getMessage("Transferred KRW ")<< amount << languageSupport->getMessage(" from account ") << sourceAccount->getAccountNumber()
+                      << languageSupport->getMessage(" to account ") << destinationAccount->getAccountNumber() << "." << std::endl;
             return true;
         } else {
             throw InsufficientFundsException();
@@ -53,7 +53,7 @@ bool TransferTransaction::execute() {
         int totalInserted = 0;
         int totalBills = 0;
 
-        std::cout << "Please insert cash by specifying the number of bills for each denomination." << std::endl;
+        std::cout << languageSupport->getMessage("Please insert cash by specifying the number of bills for each denomination.") << std::endl;
         for (const auto& denomPair : DENOMINATION_VALUES) {
             int count = 0;
             while (true) {
@@ -61,12 +61,12 @@ bool TransferTransaction::execute() {
                 try {
                     count = std::get<int>(countVariant);
                     if (count < 0) {
-                        std::cout << "Invalid count. Please enter a non-negative number." << std::endl;
+                        std::cout << languageSupport->getMessage("Invalid count. Please enter a non-negative number.") << std::endl;
                         continue;
                     }
                     break;
                 } catch (const std::bad_variant_access&) {
-                    std::cout << "Invalid input. Please enter a number." << std::endl;
+                    std::cout << languageSupport->getMessage("Invalid input. Please enter a number.") << std::endl;
                 }
             }
             insertedCash[denomPair.first] = count;
@@ -191,11 +191,11 @@ cashManager->acceptCash(feeCasher);
 
         // Accept cash
         cashManager->acceptCash(insertedCash);
-        std::cout << "Cash accepted." << std::endl;
+        std::cout << languageSupport->getMessage("Cash accepted.") << std::endl;
 
         // Deposit amount to destination account
         destinationAccount->deposit(amount);
-        std::cout << "Transferred KRW " << amount << " to account " << destinationAccount->getAccountNumber() << "." << std::endl;
+        std::cout << languageSupport->getMessage("Transferred KRW ") << amount << languageSupport->getMessage(" to account ") << destinationAccount->getAccountNumber() << "." << std::endl;
 
         return true;
     }
@@ -210,7 +210,7 @@ void TransferTransaction::rollback() {
     } else if (transferType == TransferType::CASH) {
         
         destinationAccount->withdraw(amount);
-        std::cout << "Rollback not possible for cash transfers after cash is accepted." << std::endl;
+        
     }
 }
 

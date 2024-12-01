@@ -465,7 +465,46 @@ messages["ATM has insufficient cash. Transaction rolled back."]["English"] = "AT
     messages["Transfer successful."]["English"] = "Transfer successful.";
     messages["Transfer successful."]["Korean"] = "송금이 완료되었습니다.";
 
-}
+messages["Transferred KRW "]["English"] = "Transferred KRW ";
+    messages["Transferred KRW "]["Korean"] = "송금된 KRW ";
+
+    messages["from account"]["English"] = "from account";
+    messages["from account"]["Korean"] = "계좌에서";
+
+    messages["into account"]["English"] = "into account";
+    messages["into account"]["Korean"] = "계좌로";
+
+    messages["Transfer successful."]["English"] = "Transfer successful.";
+    messages["Transfer successful."]["Korean"] = "송금이 완료되었습니다.";
+
+    messages["Transfer failed."]["English"] = "Transfer failed.";
+    messages["Transfer failed."]["Korean"] = "송금에 실패하였습니다.";
+
+    messages["Please insert cash by specifying the number of bills for each denomination."]["English"] = "Please insert cash by specifying the number of bills for each denomination.";
+    messages["Please insert cash by specifying the number of bills for each denomination."]["Korean"] = "각 지폐에 대한 개수를 지정하여 현금을 삽입하세요.";
+    
+    messages["Invalid denomination entered."]["English"] = "Invalid denomination entered.";
+    messages["Invalid denomination entered."]["Korean"] = "잘못된 지폐 단위가 입력되었습니다.";
+
+    messages["Invalid count. Please enter a non-negative number."]["English"] = "Invalid count. Please enter a non-negative number.";
+    messages["Invalid count. Please enter a non-negative number."]["Korean"] = "잘못된 수입니다. 음수가 아닌 수를 입력하세요.";
+
+    messages["Invalid input. Please enter a number."]["English"] = "Invalid input. Please enter a number.";
+    messages["Invalid input. Please enter a number."]["Korean"] = "유효하지 않은 입력입니다. 숫자를 입력하세요.";
+
+    messages["Cash accepted."]["English"] = "Cash accepted.";
+    messages["Cash accepted."]["Korean"] = "현금이 접수되었습니다.";
+
+messages["Transferred KRW "]["English"] = "Transferred KRW ";
+    messages["Transferred KRW "]["Korean"] = "송금된 KRW ";
+
+messages[" to account "]["English"] = " to account ";
+    messages[" to account "]["Korean"] = " 계좌로 ";
+
+    }
+
+
+
 
 LanguageSupport* LanguageSupport::getInstance() {
     if (instance == nullptr) {
