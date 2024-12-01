@@ -510,6 +510,8 @@ messages[" to account "]["English"] = " to account ";
 
 messages["won"]["English"] = "won";
     messages["won"]["Korean"] = "원";
+    messages["Enter amount to withdraw:\n"]["English"] = "Enter amount to withdraw:\n";
+    messages["Enter amount to withdraw:\n"]["Korean"] = "출금할 금액을 입력하세요:\n";
 
     messages["bills"]["English"] = " bills";
     messages["bills"]["Korean"] = "개";
