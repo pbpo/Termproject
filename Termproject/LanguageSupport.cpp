@@ -519,7 +519,40 @@ messages["won"]["English"] = "won";
     messages["cannot_dispense_requested_amount"]["English"] = "ATM cannot dispense the requested amount with available denominations. Transaction rolled back.";
     messages["cannot_dispense_requested_amount"]["Korean"] = "ATM에서 사용 가능한 지폐로 요청한 금액을 지급할 수 없습니다. 거래가 취소되었습니다.";
 
+messages["cash_fee_payment_instruction"]["English"] = "Please pay the cash fee in cash: KRW ";
+    messages["cash_fee_payment_instruction"]["Korean"] = "현금 수수료를 현금으로 지불하세요: KRW ";
 
+    messages["fee_cash_overpaid"]["English"] = "Fee cash overpaid: KRW ";
+    messages["fee_cash_overpaid"]["Korean"] = "수수료 현금 초과 지불: KRW ";
+
+    messages["insert_fee_cash_instruction"]["English"] = "Insert fee cash:";
+    messages["insert_fee_cash_instruction"]["Korean"] = "수수료 현금을 삽입하세요:";
+
+    messages["fee_cash_accepted"]["English"] = "Fee cash accepted.";
+    messages["fee_cash_accepted"]["Korean"] = "수수료 현금이 접수되었습니다.";
+
+    messages["currency_unit"]["English"] = " KRW";
+    messages["currency_unit"]["Korean"] = " KRW";
+
+    messages["Transaction history exported to transaction_history.txt"]["English"] = "Transaction history exported to transaction_history.txt";
+    messages["Transaction history exported to transaction_history.txt"]["Korean"] = "거래 내역이 transaction_history.txt로 내보내졌습니다";
+
+    messages["Failed to open file for writing."]["English"] = "Failed to open file for writing.";
+    messages["Failed to open file for writing."]["Korean"] = "파일을 쓰기 위해 열지 못했습니다.";
+ 
+   messages["Transaction history successfully exported to "]["English"] = "Transaction history successfully exported to ";
+    messages["Transaction history successfully exported to "]["Korean"] = "거래 내역이 다음 파일로 성공적으로 내보내졌습니다: ";
+
+    messages["ATM [SN: "]["English"] = "ATM [SN: ";
+    messages["ATM [SN: "]["Korean"] = "ATM [일련 번호: ";
+
+    messages["] "]["English"] = "] ";
+    messages["] "]["Korean"] = "] ";
+
+    messages["print_cash_inventory"]["English"] = "Print cash inventory";
+    messages["print_cash_inventory"]["Korean"] = "현금 재고 출력";
+
+    messages["display_all_transaction_history"]["English"];
 messages["1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit"]["English"] = "1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit";
     messages["1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit"]["Korean"] = "1. 입금\n2. 출금\n3. 송금\n4. 종료";
 

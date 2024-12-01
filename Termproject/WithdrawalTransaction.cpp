@@ -15,7 +15,20 @@
 #include "CashManager.hpp"
 #include "Bank.hpp"
 #include "LanguageSupport.hpp"
-
+int getDenominationValue(Denomination bill) {
+    switch (bill) {
+        case Denomination::KRW_1000:
+            return 1000;
+        case Denomination::KRW_5000:
+            return 5000;
+        case Denomination::KRW_10000:
+            return 10000;
+        case Denomination::KRW_50000:
+            return 50000;
+        default:
+            return 0; // 예외 처리 필요 시 추가
+    }
+}
 WithdrawalTransaction::WithdrawalTransaction(std::string primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account, const std::string& cardNumber)
     : ITransaction(primaryBank ,cashManager, transactionID, amount, cardNumber), account(account), fee(0) {}
 
@@ -50,9 +63,26 @@ bool WithdrawalTransaction::execute() {
     }
 
     // 성공 메시지 출력
-    std::cout << languageSupport->getMessage("withdrawal_successful") << amount << languageSupport->getMessage("won") << std::endl;
-    std::cout << languageSupport->getMessage("fee_deducted") << fee << languageSupport->getMessage("won") << std::endl;
-
+    std::cout << languageSupport->getMessage("withdrawal_successful") 
+          << amount 
+          << languageSupport->getMessage("won") 
+          << std::endl;
+std::cout << languageSupport->getMessage("fee_deducted") 
+          << fee 
+          << languageSupport->getMessage("won") 
+          << std::endl;
+std::cout << languageSupport->getMessage("dispensed_bills") 
+          << std::endl;
+for (const auto& [bill, count] : dispensedCash) {
+    if (count > 0) {
+        std::cout << getDenominationValue(bill) 
+                  << languageSupport->getMessage("won") 
+                  << ": " 
+                  << count 
+                  << languageSupport->getMessage("bills") 
+                  << std::endl;
+    }
+}
 
 
     return true;
