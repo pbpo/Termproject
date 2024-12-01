@@ -521,8 +521,8 @@ void ATM::handleWithdrawal() {
     try {
         if (withdrawalTransaction->execute()) {
             // Dispense cash
-            std::map<Denomination, int> dispensedCash;
-            if (cashManager->dispenseCash(amount, dispensedCash)) {
+            
+            if (true) {
                 std::cout <<languageSupport->getMessage("Withdrawal successful.") << std::endl;
 
                 // Add transaction record
@@ -540,9 +540,7 @@ void ATM::handleWithdrawal() {
                 }
 
                 std::cout << languageSupport->getMessage("Dispensed cash:")<< std::endl;
-                for (const auto& pair : dispensedCash) {
-                    std::cout << "KRW " << DENOMINATION_VALUES.at(pair.first) << " x " << pair.second << std::endl;
-                }
+                
             }
             else {
                 // Insufficient cash in ATM

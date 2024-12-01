@@ -36,7 +36,7 @@ bool WithdrawalTransaction::execute() {
     int totalAmount = amount + fee;
 
     // 계좌에서 총 금액 출금 시도
-    if (account->withdraw(totalAmount)==false) {
+    if (!account->withdraw(amount)) {
         throw InsufficientFundsException(languageSupport->getMessage("insufficient_funds_with_fee"));
     }
 
@@ -45,6 +45,7 @@ bool WithdrawalTransaction::execute() {
     if (!cashManager->dispenseCash(amount, dispensedCash)) {
         // 출금 불가능한 경우 롤백
         account->deposit(totalAmount);
+        
         throw InsufficientFundsException(languageSupport->getMessage("cannot_dispense_requested_amount"));
     }
 
@@ -52,13 +53,7 @@ bool WithdrawalTransaction::execute() {
     std::cout << languageSupport->getMessage("withdrawal_successful") << amount << languageSupport->getMessage("won") << std::endl;
     std::cout << languageSupport->getMessage("fee_deducted") << fee << languageSupport->getMessage("won") << std::endl;
 
-    // 출금된 지폐 내역 출력
-    std::cout << languageSupport->getMessage("dispensed_bills") << std::endl;
-    for (const auto& [bill, count] : dispensedCash) {
-        if (count > 0) {
-            std::cout << static_cast<int>(bill) << languageSupport->getMessage("won") << ": " << count << languageSupport->getMessage("bills") << std::endl;
-        }
-    }
+
 
     return true;
 }
@@ -66,7 +61,7 @@ bool WithdrawalTransaction::execute() {
 void WithdrawalTransaction::rollback() {
     LanguageSupport* languageSupport = LanguageSupport::getInstance();
     std::cout << languageSupport->getMessage("rollback_initiated") << std::endl;
-    account->deposit(amount + fee);
+    account->deposit(amount);
 }
 
 void WithdrawalTransaction::printDetails() const {

@@ -6,14 +6,12 @@
 #include <vector>
 #include <map>
 #include <set>
+
 struct CashState {
     int currentAmount;
     std::map<Denomination, int> billsUsed;
 
     // For ordering in the queue
-    bool operator<(const CashState& other) const {
-        return currentAmount > other.currentAmount; // Priority queue uses max heap by default
-    }
 };
 CashManager::CashManager() {
     // Initialize with zero cash; the bank will deposit cash during initialization
@@ -24,16 +22,10 @@ CashManager::CashManager() {
 
 bool CashManager::dispenseCash(int amount, std::map<Denomination, int>& dispensedCash) {
     dispensedCash.clear();
-    if (amount <= 0) return false;
+    if (amount < 0) return false;
 
-    // Initialize BFS
-    std::priority_queue<CashState> q;
-    CashState initialState = {0, {}};
-    q.push(initialState);
-
-    // To keep track of visited amounts to prevent revisiting
-    std::set<int> visited;
-    visited.insert(0);
+    // Clone the cashInventory to work with
+    std::map<Denomination, int> tempInventory = cashInventory;
 
     // List of denominations sorted in descending order
     std::vector<Denomination> denominations;
@@ -45,8 +37,51 @@ bool CashManager::dispenseCash(int amount, std::map<Denomination, int>& dispense
                   return DENOMINATION_VALUES.at(a) > DENOMINATION_VALUES.at(b);
               });
 
+    // 1. 그리디 알고리즘 시도
+    int remainingAmount = amount;
+    for (const auto& denom : denominations) {
+        int denomValue = DENOMINATION_VALUES.at(denom);
+        int availableBills = tempInventory[denom];
+        if (denomValue > remainingAmount || availableBills == 0) continue;
+
+        int neededBills = remainingAmount / denomValue;
+        int usedBills = std::min(neededBills, availableBills);
+        if (usedBills > 0) {
+            dispensedCash[denom] = usedBills;
+            remainingAmount -= denomValue * usedBills;
+        }
+
+        if (remainingAmount == 0) break;
+    }
+
+    if (remainingAmount == 0) {
+        // 그리디 알고리즘으로 정확한 금액을 분배할 수 있었음
+        // cashInventory 업데이트
+        for (const auto& pair : dispensedCash) {
+            cashInventory[pair.first] -= pair.second;
+        }
+        return true;
+    }
+
+    // 2. 그리디 알고리즘 실패 시 BFS 시도
+    // Initialize BFS with a regular queue
+    std::queue<CashState> q;
+    CashState initialState = {0, {}};
+    q.push(initialState);
+
+    // To keep track of visited states (amount and bills used)
+    std::set<std::pair<int, std::string>> visited; // pair of amount and serialized billsUsed
+    auto serialize = [&](const std::map<Denomination, int>& bills) -> std::string {
+        std::string s;
+        for (const auto& pair : bills) {
+            s += std::to_string(pair.second) + ",";
+        }
+        return s;
+    };
+    visited.emplace(0, serialize(initialState.billsUsed));
+
     while (!q.empty()) {
-        CashState currentState = q.top();
+        CashState currentState = q.front();
         q.pop();
 
         int currentAmount = currentState.currentAmount;
@@ -58,17 +93,18 @@ bool CashManager::dispenseCash(int amount, std::map<Denomination, int>& dispense
 
             if (newAmount > amount) continue;
 
-            // Check if we have already visited this amount
-            if (visited.find(newAmount) != visited.end()) continue;
-
             // Check if there are available bills for this denomination
             int usedBills = currentState.billsUsed[denom];
-            if (usedBills >= cashInventory[denom]) continue;
+            if (usedBills >= tempInventory[denom]) continue;
 
             // Create a new state
             CashState newState = currentState;
             newState.currentAmount = newAmount;
             newState.billsUsed[denom] += 1;
+
+            // Serialize the billsUsed for visited check
+            std::string serialized = serialize(newState.billsUsed);
+            if (visited.find({newAmount, serialized}) != visited.end()) continue;
 
             // Check if we've reached the desired amount
             if (newAmount == amount) {
@@ -82,8 +118,8 @@ bool CashManager::dispenseCash(int amount, std::map<Denomination, int>& dispense
                 return true;
             }
 
-            // Mark this amount as visited and add the new state to the queue
-            visited.insert(newAmount);
+            // Mark this state as visited and add the new state to the queue
+            visited.emplace(newAmount, serialized);
             q.push(newState);
         }
     }
@@ -91,7 +127,6 @@ bool CashManager::dispenseCash(int amount, std::map<Denomination, int>& dispense
     // If we reach here, dispensing the exact amount is not possible
     return false;
 }
-
 void CashManager::acceptCash(const std::map<Denomination, int>& cashDetails) {
     int totalBills = 0;
     for (const auto& pair : cashDetails) {
