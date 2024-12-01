@@ -2,7 +2,19 @@
 #include <iostream>
 #include <algorithm>
 #include "Exceptions.hpp"
+#include <queue>
+#include <vector>
+#include <map>
+#include <set>
+struct CashState {
+    int currentAmount;
+    std::map<Denomination, int> billsUsed;
 
+    // For ordering in the queue
+    bool operator<(const CashState& other) const {
+        return currentAmount > other.currentAmount; // Priority queue uses max heap by default
+    }
+};
 CashManager::CashManager() {
     // Initialize with zero cash; the bank will deposit cash during initialization
     for (const auto& pair : DENOMINATION_VALUES) {
@@ -12,37 +24,72 @@ CashManager::CashManager() {
 
 bool CashManager::dispenseCash(int amount, std::map<Denomination, int>& dispensedCash) {
     dispensedCash.clear();
-    int remainingAmount = amount;
+    if (amount <= 0) return false;
 
-    // Start from highest denomination
-    for (auto it = DENOMINATION_VALUES.rbegin(); it != DENOMINATION_VALUES.rend(); ++it) {
-        Denomination denom = it->first;
-        int denomValue = it->second;
-        int availableCount = cashInventory[denom];
-        int neededCount = remainingAmount / denomValue;
+    // Initialize BFS
+    std::priority_queue<CashState> q;
+    CashState initialState = {0, {}};
+    q.push(initialState);
 
-        if (neededCount > 0) {
-            int dispensedCount = std::min(neededCount, availableCount);
-            if (dispensedCount > 0) {
-                dispensedCash[denom] = dispensedCount;
-                remainingAmount -= dispensedCount * denomValue;
-                // Do not update cashInventory here; update after confirming the transaction
+    // To keep track of visited amounts to prevent revisiting
+    std::set<int> visited;
+    visited.insert(0);
+
+    // List of denominations sorted in descending order
+    std::vector<Denomination> denominations;
+    for (const auto& pair : DENOMINATION_VALUES) {
+        denominations.push_back(pair.first);
+    }
+    std::sort(denominations.begin(), denominations.end(),
+              [&](const Denomination& a, const Denomination& b) {
+                  return DENOMINATION_VALUES.at(a) > DENOMINATION_VALUES.at(b);
+              });
+
+    while (!q.empty()) {
+        CashState currentState = q.top();
+        q.pop();
+
+        int currentAmount = currentState.currentAmount;
+
+        // Try adding each denomination
+        for (const auto& denom : denominations) {
+            int denomValue = DENOMINATION_VALUES.at(denom);
+            int newAmount = currentAmount + denomValue;
+
+            if (newAmount > amount) continue;
+
+            // Check if we have already visited this amount
+            if (visited.find(newAmount) != visited.end()) continue;
+
+            // Check if there are available bills for this denomination
+            int usedBills = currentState.billsUsed[denom];
+            if (usedBills >= cashInventory[denom]) continue;
+
+            // Create a new state
+            CashState newState = currentState;
+            newState.currentAmount = newAmount;
+            newState.billsUsed[denom] += 1;
+
+            // Check if we've reached the desired amount
+            if (newAmount == amount) {
+                dispensedCash = newState.billsUsed;
+
+                // Update cash inventory
+                for (const auto& pair : dispensedCash) {
+                    cashInventory[pair.first] -= pair.second;
+                }
+
+                return true;
             }
+
+            // Mark this amount as visited and add the new state to the queue
+            visited.insert(newAmount);
+            q.push(newState);
         }
     }
 
-    if (remainingAmount == 0) {
-        // Update the cash inventory after successfully calculating the dispensed cash
-        for (const auto& pair : dispensedCash) {
-            cashInventory[pair.first] -= pair.second;
-        }
-        return true;
-    }
-    else {
-        // Cannot dispense the exact amount with available denominations
-        dispensedCash.clear();
-        return false;
-    }
+    // If we reach here, dispensing the exact amount is not possible
+    return false;
 }
 
 void CashManager::acceptCash(const std::map<Denomination, int>& cashDetails) {
