@@ -212,7 +212,7 @@ void ATM::startSession() {
                     // Authentication successful
                     currentAccount = bankManager->getAccount(cardNumber);
                     if (!currentAccount) {
-                        std::cout << "Account not found. Please contact the bank." << std::endl;
+                        std::cout << languageSupport->getMessage("Account not found. Please contact the bank.") << std::endl;
                         break;
                     }
                     currentCardNumber = cardNumber;
@@ -320,7 +320,7 @@ void ATM::displayCashInventory() const {
 void ATM::showMainMenu() {
     while (true) {
         std::cout << languageSupport->getMessage("select_transaction") << std::endl;
-        std::cout << "1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit" << std::endl;
+        std::cout << languageSupport->getMessage("1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit") << std::endl;
 
         int choice = 0;
         auto choiceVariant = InputHandler::getInput("", InputType::INT);
@@ -343,6 +343,7 @@ void ATM::showMainMenu() {
             handleTransfer();
             break;
         case 4:
+        wrongPasswordAttempts = 0;
             endSession();
             return;
         default:

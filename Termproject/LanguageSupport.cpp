@@ -515,8 +515,11 @@ messages["won"]["English"] = "won";
     messages["cannot_dispense_requested_amount"]["Korean"] = "ATM에서 사용 가능한 지폐로 요청한 금액을 지급할 수 없습니다. 거래가 취소되었습니다.";
 
 
+messages["1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit"]["English"] = "1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit";
+    messages["1. Deposit\n2. Withdrawal\n3. Transfer\n4. Exit"]["Korean"] = "1. 입금\n2. 출금\n3. 송금\n4. 종료";
 
-
+messages["Account not found. Please contact the bank."]["English"] = "Account not found. Please contact the bank.";
+    messages["Account not found. Please contact the bank."]["Korean"] = "계좌를 찾을 수 없습니다. 은행에 문의하세요.";
     }
 
 
