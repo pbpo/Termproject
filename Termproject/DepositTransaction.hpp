@@ -13,6 +13,7 @@ private:
     int fee;
     LanguageSupport* languageSupport;
     bool feeDeductedFromAccount;
+    int totalBills;
 
 public:
     // amount 매개변수를 추가한 생성자
@@ -22,6 +23,7 @@ public:
     bool execute() override;
     void rollback() override;
     void printDetails() const override;
+    int total() const;
     std::string getTransactionType() const override {
         return "Deposit";
     }

@@ -11,7 +11,7 @@
 
 DepositTransaction::DepositTransaction(std::string primaryBank,CashManager* cashManager, const std::string& transactionID, int amount, const std::shared_ptr<Account>& account,
     DepositType depositType, const std::string& cardNumber)
-    : ITransaction(primaryBank,cashManager, transactionID, amount, cardNumber), account(account), depositType(depositType), fee(0), feeDeductedFromAccount(false) {
+    : ITransaction(primaryBank,cashManager, transactionID, amount, cardNumber), account(account), depositType(depositType), fee(0), feeDeductedFromAccount(false),totalBills(0) {
     languageSupport = LanguageSupport::getInstance();
 }
 
@@ -33,7 +33,7 @@ bool DepositTransaction::execute() {
         // Handle cash deposit
         std::map<Denomination, int> insertedCash;
         int totalInserted = 0;
-        int totalBills = 0;
+        totalBills = 0;
 
         std::cout << languageSupport->getMessage("insert_cash_instruction") << std::endl;
         for (const auto& denomPair : DENOMINATION_VALUES) {
@@ -242,7 +242,9 @@ cashManager->acceptCash(feeCash);
 
     return true;
 }
-
+int DepositTransaction::total() const{
+    return totalBills;
+}
 void DepositTransaction::rollback() {
     try {
         // Return deposited amount

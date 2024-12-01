@@ -451,17 +451,20 @@ void ATM::handleDeposit() {
 }
     // DepositTransaction 객체 생성
     auto depositTransaction = TransactionFactory::createDepositTransaction(primaryBank->getBankName(),cashManager, amount, currentAccount, depositType, currentCardNumber);
-                if (depositType == DepositType::CHECK) {
+                std::shared_ptr<DepositTransaction> specificDepositTransaction = std::dynamic_pointer_cast<DepositTransaction>(depositTransaction);
+    if (depositType == DepositType::CHECK) {
             checkDeposits += 1;
-        } else {
-            cashDeposits += 1;
-        }
+        } 
     // 트랜잭션 실행
     if (depositTransaction->execute()) {
         // 거래 기록 추가
         currentAccount->addTransaction(depositTransaction);
         addSessionTransaction(depositTransaction);
         std::cout << languageSupport->getMessage("deposit_successful") << std::endl;
+        if(depositType == DepositType::CASH){
+            
+            cashDeposits += specificDepositTransaction->total();
+        }
         if (transactionLogger) {
             transactionLogger->logTransaction(
                 depositTransaction->getTransactionID(),
