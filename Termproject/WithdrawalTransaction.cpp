@@ -36,7 +36,7 @@ bool WithdrawalTransaction::execute() {
     int totalAmount = amount + fee;
 
     // 계좌에서 총 금액 출금 시도
-    if (!account->withdraw(amount)) {
+    if (!account->withdraw(totalAmount)) {
         throw InsufficientFundsException(languageSupport->getMessage("insufficient_funds_with_fee"));
     }
 
