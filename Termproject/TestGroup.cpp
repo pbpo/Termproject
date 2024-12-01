@@ -27,7 +27,8 @@ void TestGroup::execute(int testIndex) {
             throw invalid_argument("Invalid test ID: " + formatTestId(testIndex));
         }
         cout << "Running test for REQ" << formatTestId(testIndex) << "...\n";
-        callTest(testIndex); // 특정 테스트 실행
+        //callTest(testIndex); // 특정 테스트 실행
+        callTest(1); //테스트 데이터만 입력
     }
     catch (const exception& e) {
         cerr << e.what() << endl;

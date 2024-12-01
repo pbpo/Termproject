@@ -16,7 +16,7 @@ using namespace std;
 
 // 생성자 구현
 // TestGroup 생성자를 실행할 때 구현한 테스트 개수를 입력해주시기 바랍니다
-AdminMenuTest::AdminMenuTest(int groupNumber) : TestGroup(groupNumber, 3) {}
+AdminMenuTest::AdminMenuTest(int groupNumber) : TestGroup(groupNumber, 11) {}
 
 // 테스트 함수 구현
 void AdminMenuTest::test_1() {
@@ -38,6 +38,7 @@ void AdminMenuTest::test_3() {
     //o(REQ7.3) "거래 내역" 정보는 외부 파일(예: txt 파일)로 출력되어야 합니다.
     cout << "Running AdminMenuTest - Test 3" << endl;
 }
+
 void AdminMenuTest::initializeSystemWithTestData() {
 
     BankManager* manager = BankManager::getInstance();
